@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>QR Scanner - VAMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- html5-qrcode library for camera access -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        #reader {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            display: none; /* hidden until started */
+        }
+        #reader video {
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body class="modern-auth-container pb-5">
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark sticky-top" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); box-shadow: 0 4px 15px rgba(13,110,253,0.3); z-index: 1050;">
+  <div class="container-fluid px-4">
+    <div class="d-flex align-items-center">
+        <a class="navbar-brand fw-bold m-0" href="javascript:history.back()"><i class="bi bi-arrow-left me-2"></i>Back</a>
+    </div>
+    <div class="text-white fw-bold"><i class="bi bi-upc-scan me-2"></i>QR Scanner</div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            
+            <div class="modern-auth-card p-4 p-md-5 mb-5 shadow-sm bg-white rounded-4 border-0" style="box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important;">
+                
+                <div class="text-center mb-4">
+                    <div class="d-inline-block p-3 rounded-circle bg-primary bg-opacity-10 mb-3 text-primary">
+                        <i class="bi bi-camera-video-fill" style="font-size: 2.5rem;"></i>
+                    </div>
+                    <h3 class="fw-bold">Scan QR Code</h3>
+                    <p class="text-muted small">Scanner ID: <span th:text="${#authentication.name}" class="fw-bold"></span></p>
+                </div>
+                
+                <div class="mb-4">
+                    <button onclick="startScanner()" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3 mb-3">
+                        <i class="bi bi-camera me-2"></i> START CAMERA SCANNER
+                    </button>
+                    <!-- Camera viewport -->
+                    <div id="reader" class="mb-3 border border-2 border-primary border-opacity-25 shadow-sm"></div>
+                </div>
+                
+                <hr class="my-4 text-muted">
+                
+                <form th:action="@{/scanner/verify}" method="post">
+                    <!-- Guard Gate Selection -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted small">STATIONED AT GATE</label>
+                        
+                        <!-- Show static text if gate is pre-selected by Employee Dashboard -->
+                        <div th:if="${selectedGateId != null}">
+                            <div class="d-flex align-items-center bg-light rounded-3 px-3 py-2 border">
+                                <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+                                <span th:each="gate : ${allGates}" th:if="${gate.id == selectedGateId}" class="fw-bold" th:text="${gate.gateNo + ' - ' + gate.location}"></span>
+                            </div>
+                            <input type="hidden" name="gateId" th:value="${selectedGateId}" />
+                        </div>
+
+                        <!-- Show dropdown if gate is not pre-selected (e.g. for Manager/Owner) -->
+                        <div class="input-group" th:if="${selectedGateId == null}">
+                            <span class="input-group-text bg-light border-0 text-primary"><i class="bi bi-geo-alt-fill"></i></span>
+                            <select name="gateId" class="form-select bg-light border-0 form-select-lg" required>
+                                <option value="" disabled selected>-- Select Gate --</option>
+                                <option th:each="gate : ${allGates}" th:value="${gate.id}" th:text="${gate.gateNo + ' - ' + gate.location}"></option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted small">MANUAL QR ENTRY</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0 text-primary"><i class="bi bi-upc"></i></span>
+                            <input type="text" id="manualToken" name="qrToken" class="form-control form-control-lg bg-light border-0" placeholder="Paste ID Here" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-dark btn-lg w-100 rounded-pill fw-bold shadow-sm py-3 mt-2">
+                        <i class="bi bi-check2-circle me-2"></i> VERIFY QR
+                    </button>
+                </form>
+                
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    function startScanner() {
+        document.getElementById('reader').style.display = 'block';
+        const html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
+            (decodedText, decodedResult) => {
+                // When a QR code is successfully read:
+                html5QrCode.stop(); // Turn off camera
+                document.getElementById('manualToken').value = decodedText; // Put token in box
+                document.forms[0].submit(); // Automatically submit the form to Java backend
+            },
+            (errorMessage) => { 
+                // Ignore background frame errors while scanning
+            }
+        ).catch((err) => { 
+            alert("Camera access denied or error: " + err); 
+        });
+    }
+</script>
+
+<!-- Audio feedback element on scan recognition -->
+<audio id="scanSuccessAudio" preload="auto">
+    <source src="data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU" type="audio/wav">
+</audio>
+
+</body>
+</html>
