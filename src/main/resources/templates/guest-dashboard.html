@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>VAMS - Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+<link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-white pb-5">
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card rounded-0 border-dark">
+                <div class="card-header rounded-0 border-dark border-bottom">
+                    <h5 class="mb-0 fw-bold text-uppercase">USER DASHBOARD</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row-padded row align-items-center">
+                        <div class="col-12">Welcome, <span class="fw-bold" th:text="${#authentication.name}">User</span></div>
+                    </div>
+                    
+                    <div class="row-padded row align-items-center bg-light border-top border-bottom">
+                        <div class="col-12 fw-bold">My QR Code</div>
+                    </div>
+                    
+                    <!-- REAL BASE64 QR CODE INJECTION -->
+                    <div class="p-4 text-center border-bottom">
+                        <div th:if="${qrImage != null}">
+                            <img th:src="*{'data:image/png;base64,' + qrImage}" alt="Your QR Code" class="img-fluid border border-dark p-2 mb-2" />
+                            <p class="mb-0 fw-bold" th:text="'ID: ' + ${request.qrToken}"></p>
+                        </div>
+                        <div th:if="${qrImage == null}">
+                            <p class="text-muted mb-0">No active QR code found. Please wait for Manager approval.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row-padded row align-items-center">
+                        <!-- Dynamic status based on Database -->
+                        <div class="col-12">QR Status: 
+                            <strong th:if="${request != null && request.status.name() == 'APPROVED'}" class="text-success">ACTIVE</strong>
+                            <strong th:if="${request == null}" class="text-warning">PENDING APPROVAL</strong>
+                        </div>
+                    </div>
+                    <div class="row-padded row align-items-center">
+                        <div class="col-12">Valid Until: <span th:text="${request != null ? request.validityType : 'N/A'}"></span></div>
+                    </div>
+                    <div class="row-padded row align-items-center border-bottom-0">
+                        <div class="col-12">Section: <span th:text="${request != null ? request.accessLevel : 'N/A'}"></span></div>
+                    </div>
+                    
+                    <div class="row-padded row align-items-center border-top border-dark">
+                        <div class="col-12">
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button type="submit" class="btn-primary-action fw-bold">Logout</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="mt-2 text-dark small"><strong>Flow:</strong> Present this physical QR Code to the tablet scanner at the entrance gate.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Pass Countdown Expiration Progress Component -->
+<div class="progress mb-3" style="height: 6px;">
+    <div id="passExpirationBar" class="progress-bar bg-success" role="progressbar" style="width: 100%;"></div>
+</div>
+
+</body>
+</html>
+
