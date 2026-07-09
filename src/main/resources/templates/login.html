@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>VAMS - Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="/css/style.css?v=4" rel="stylesheet">
+    <style>
+        /* Modern 1-Click Demo Account Card Styles */
+        .demo-card-btn {
+            background-color: #FFFFFF !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 12px !important;
+            padding: 9px 10px !important;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            text-decoration: none !important;
+            font-family: inherit !important;
+            text-transform: none !important;
+            letter-spacing: normal !important;
+        }
+        .demo-card-btn:hover {
+            border-color: #94A3B8 !important;
+            background-color: #F8FAFC !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+        }
+        .demo-card-btn.active-role {
+            border-color: var(--color-primary-blue) !important;
+            background-color: #EFF6FF !important;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15) !important;
+        }
+        .demo-icon-badge {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .badge-owner {
+            background: #EEF2FF;
+            color: #4F46E5;
+        }
+        .badge-manager {
+            background: #ECFDF5;
+            color: #059669;
+        }
+        .badge-guard1 {
+            background: #F0FDF4;
+            color: #16A34A;
+        }
+        .badge-guard2 {
+            background: #EFF6FF;
+            color: #2563EB;
+        }
+        .badge-guest {
+            background: #FAF5FF;
+            color: #9333EA;
+        }
+        .demo-role-title {
+            font-weight: 600;
+            font-size: 0.82rem;
+            color: #1E293B;
+            line-height: 1.2;
+            font-family: inherit !important;
+            text-transform: none !important;
+            letter-spacing: normal !important;
+        }
+        .demo-role-user {
+            font-size: 0.7rem;
+            color: #64748B;
+            font-family: inherit !important;
+            text-transform: none !important;
+            letter-spacing: normal !important;
+        }
+        .demo-highlight {
+            animation: demoInputPulse 0.6s ease-in-out;
+        }
+        @keyframes demoInputPulse {
+            0% { background-color: rgba(26, 115, 232, 0.15); }
+            100% { background-color: transparent; }
+        }
+    </style>
+</head>
+<body class="modern-auth-container d-flex align-items-center justify-content-center py-4">
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-11 col-sm-9 col-md-7 col-lg-5" style="max-width: 480px;">
+            
+            <div class="text-center mb-4">
+                <div class="d-inline-flex p-3 rounded-circle bg-primary bg-opacity-10 text-primary mb-2" style="border-radius: 50% !important;">
+                    <i class="bi bi-shield-lock-fill fs-3"></i>
+                </div>
+                <h4 class="modern-auth-title mb-1">Welcome Back</h4>
+                <p class="modern-auth-subtitle mb-0">Sign in to Visitor Access Management System</p>
+            </div>
+
+            <div class="card modern-auth-card p-4">
+                <div class="card-body p-0">
+                    
+                    <div th:if="${param.error}" class="alert alert-danger rounded-3 p-2 small text-center mb-3">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i> Invalid credentials, or email not verified.
+                    </div>
+                    <div th:if="${param.logout}" class="alert alert-success rounded-3 p-2 small text-center mb-3">
+                        <i class="bi bi-check-circle-fill me-1"></i> You have been logged out successfully.
+                    </div>
+                    <div th:if="${param.registered}" class="alert alert-success rounded-3 p-2 small text-center mb-3">
+                        <i class="bi bi-check-circle-fill me-1"></i> Email verified. Please log in.
+                    </div>
+                    <div th:if="${param.passwordReset}" class="alert alert-success rounded-3 p-2 small text-center mb-3">
+                        <i class="bi bi-check-circle-fill me-1"></i> Password updated successfully.
+                    </div>
+
+                    <form th:action="@{/login}" method="post">
+                        
+                        <!-- Email / User ID Input -->
+                        <div class="mb-3">
+                            <label class="modern-auth-subtitle fw-bold mb-1 d-block" style="font-size: 0.8rem;">Email or User ID</label>
+                            <div class="input-group modern-input-group" id="group-username">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="text" class="form-control" id="username" name="username" placeholder="name@example.com or user ID" required autocomplete="username">
+                            </div>
+                        </div>
+
+                        <!-- Password Input with Toggle Eye -->
+                        <div class="mb-3">
+                            <label class="modern-auth-subtitle fw-bold mb-1 d-block" style="font-size: 0.8rem;">Password</label>
+                            <div class="input-group modern-input-group" id="group-password">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required autocomplete="current-password">
+                                <button type="button" class="btn btn-link text-muted pe-3 text-decoration-none border-0" onclick="togglePasswordVisibility()" title="Show/Hide Password" style="box-shadow: none !important; outline: none;">
+                                    <i class="bi bi-eye" id="togglePassIcon"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Remember Me & Forgot Password -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div class="form-check mb-0">
+                                <input class="form-check-input" type="checkbox" id="rememberMe">
+                                <label class="form-check-label modern-auth-subtitle" for="rememberMe">
+                                    Remember me
+                                </label>
+                            </div>
+                            <a th:href="@{/forgot-password}" class="modern-auth-link fw-bold">Forgot Password?</a>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <button type="submit" id="submitBtn" class="btn-primary-action w-100">
+                            <span>Sign In</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </button>
+
+                    </form>
+
+                    <!-- Divider for Demo Accounts -->
+                    <div class="position-relative my-4 text-center">
+                        <hr class="border-secondary opacity-25 my-0">
+                        <span class="position-absolute top-50 start-50 translate-middle px-3 bg-white text-muted fw-bold text-nowrap" style="font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;">
+                            <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Quick Demo Access
+                        </span>
+                    </div>
+
+                    <!-- Auto-Fill Alert Banner (Appears smoothly when role is clicked) -->
+                    <div id="demoAlert" class="alert alert-light border border-primary border-opacity-25 rounded-3 py-2 px-3 small d-none mb-3 text-center shadow-sm">
+                        <i class="bi bi-check-circle-fill text-success me-1"></i>
+                        <span id="demoAlertText" class="text-dark fw-semibold"></span>
+                    </div>
+
+                    <!-- Modern 5-Role Demo Grid -->
+                    <div class="row g-2">
+                        <!-- Role 1: Owner (Super Admin) -->
+                        <div class="col-6">
+                            <button type="button" class="demo-card-btn w-100 p-2 text-start d-flex align-items-center gap-2"
+                                    onclick="applyDemoCredentials('admin', '321654', 'Owner (Super Admin)', this)"
+                                    title="Auto-fill Owner credentials">
+                                <div class="demo-icon-badge badge-owner">
+                                    <i class="bi bi-shield-shaded"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="demo-role-title">Owner</div>
+                                    <div class="demo-role-user">@admin</div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Role 2: Manager (Admin) -->
+                        <div class="col-6">
+                            <button type="button" class="demo-card-btn w-100 p-2 text-start d-flex align-items-center gap-2"
+                                    onclick="applyDemoCredentials('manager', '98765', 'Manager (Admin)', this)"
+                                    title="Auto-fill Manager credentials">
+                                <div class="demo-icon-badge badge-manager">
+                                    <i class="bi bi-briefcase-fill"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="demo-role-title">Manager</div>
+                                    <div class="demo-role-user">@manager</div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Role 3: Employee / Guard 1 -->
+                        <div class="col-6">
+                            <button type="button" class="demo-card-btn w-100 p-2 text-start d-flex align-items-center gap-2"
+                                    onclick="applyDemoCredentials('employee1', '654123', 'Guard 1 (Employee)', this)"
+                                    title="Auto-fill Guard 1 credentials">
+                                <div class="demo-icon-badge badge-guard1">
+                                    <i class="bi bi-person-badge-fill"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="demo-role-title">Guard 1</div>
+                                    <div class="demo-role-user">@employee1</div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Role 4: Employee / Guard 2 -->
+                        <div class="col-6">
+                            <button type="button" class="demo-card-btn w-100 p-2 text-start d-flex align-items-center gap-2"
+                                    onclick="applyDemoCredentials('employee2', '53214', 'Guard 2 (Employee)', this)"
+                                    title="Auto-fill Guard 2 credentials">
+                                <div class="demo-icon-badge badge-guard2">
+                                    <i class="bi bi-shield-check"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <div class="demo-role-title">Guard 2</div>
+                                    <div class="demo-role-user">@employee2</div>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Role 5: Visitor / Guest -->
+                        <div class="col-12">
+                            <button type="button" class="demo-card-btn w-100 p-2 text-start d-flex align-items-center gap-2"
+                                    onclick="applyDemoCredentials('guest1', '123456', 'Visitor / Guest', this)"
+                                    title="Auto-fill Visitor credentials">
+                                <div class="demo-icon-badge badge-guest">
+                                    <i class="bi bi-qr-code"></i>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center flex-grow-1 pe-1 overflow-hidden">
+                                    <div>
+                                        <div class="demo-role-title">Visitor / Guest</div>
+                                        <div class="demo-role-user">@guest1 &bull; Instant Access Pass</div>
+                                    </div>
+                                    <span class="badge rounded-pill px-2 py-1 small fw-semibold" style="background-color: #F3E8FF; color: #7E22CE; font-size: 0.68rem; border-radius: 50rem !important;">Demo Pass</span>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <span class="modern-auth-subtitle">Don't have an account? </span>
+                <a th:href="@{/register}" class="modern-auth-link fw-bold text-decoration-none" style="color: var(--color-primary-blue) !important;">Sign up for free</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+function applyDemoCredentials(username, password, roleLabel, buttonElement) {
+    const userInput = document.getElementById('username');
+    const passInput = document.getElementById('password');
+    const alertBox = document.getElementById('demoAlert');
+    const alertText = document.getElementById('demoAlertText');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Auto-populate values without exposing passwords in the UI
+    userInput.value = username;
+    passInput.value = password;
+
+    // Visual pulse feedback on input groups
+    const userGroup = document.getElementById('group-username');
+    const passGroup = document.getElementById('group-password');
+
+    userGroup.classList.remove('demo-highlight');
+    passGroup.classList.remove('demo-highlight');
+    void userGroup.offsetWidth; // Trigger browser reflow
+    userGroup.classList.add('demo-highlight');
+    passGroup.classList.add('demo-highlight');
+
+    // Update active highlight on buttons
+    document.querySelectorAll('.demo-card-btn').forEach(btn => btn.classList.remove('active-role'));
+    if (buttonElement) {
+        buttonElement.classList.add('active-role');
+    }
+
+    // Show confirmation banner
+    alertText.innerHTML = `Loaded <strong>${roleLabel}</strong> (<code>@${username}</code>). Click <strong>Sign In</strong> to enter.`;
+    alertBox.classList.remove('d-none');
+
+    // Focus on the Sign In button
+    if (submitBtn) {
+        submitBtn.focus();
+    }
+}
+
+function togglePasswordVisibility() {
+    const passInput = document.getElementById('password');
+    const icon = document.getElementById('togglePassIcon');
+    if (passInput.type === 'password') {
+        passInput.type = 'text';
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+    } else {
+        passInput.type = 'password';
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+    }
+}
+</script>
+
+
+<!-- Modern 1-Click Demo Account Quick-Fill Card Component -->
+<div class="demo-card-highlight d-none" id="demoCardHighlightIndicator">
+    <span class="badge bg-primary">Demo Role Selected</span>
+</div>
+
+</body>
+</html>
