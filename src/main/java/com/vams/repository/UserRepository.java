@@ -13,4 +13,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @org.springframework.data.jpa.repository.Query("SELECT u FROM User u WHERE LOWER(u.username) = LOWER(:username) OR LOWER(u.email) = LOWER(:email)")
     java.util.Optional<User> findByUsernameOrEmailIgnoreCase(String username, String email);
 
+
+    @org.springframework.data.jpa.repository.Query("SELECT u FROM User u WHERE LOWER(u.username) = LOWER(:username) OR LOWER(u.email) = LOWER(:email)")
+    java.util.Optional<User> findByUsernameOrEmailIgnoreCase(String username, String email);
+
 }
