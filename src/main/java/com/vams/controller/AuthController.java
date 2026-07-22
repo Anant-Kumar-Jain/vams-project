@@ -99,4 +99,14 @@ public class AuthController {
         return status;
     }
 
+
+    @org.springframework.web.bind.annotation.GetMapping("/api/health")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public java.util.Map<String, String> getApplicationHealthCheck() {
+        java.util.Map<String, String> status = new java.util.HashMap<>();
+        status.put("status", "UP");
+        status.put("uptime", java.time.Instant.now().toString());
+        return status;
+    }
+
 }
