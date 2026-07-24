@@ -144,4 +144,16 @@ public class ScannerService {
         return false;
     }
 
+
+    public boolean verifyHmacSha256(String data, String signature, String secret) {
+        try {
+            javax.crypto.Mac mac = javax.crypto.Mac.getInstance("HmacSHA256");
+            mac.init(new javax.crypto.spec.SecretKeySpec(secret.getBytes(), "HmacSHA256"));
+            byte[] hash = mac.doFinal(data.getBytes());
+            return java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(hash).equals(signature);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }
