@@ -75,4 +75,11 @@ public class EmployeeController {
         return stationRequestRepository.existsByGuardIdAndStationStatus(guardId, RequestStatus.APPROVED);
     }
 
+
+    @org.springframework.web.bind.annotation.GetMapping("/guard/station-status")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public boolean isGuardStationAssigned(Long guardId) {
+        return stationRequestRepository.existsByGuardIdAndStationStatus(guardId, RequestStatus.APPROVED);
+    }
+
 }
