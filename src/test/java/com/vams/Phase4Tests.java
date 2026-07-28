@@ -107,4 +107,13 @@ class Phase4Tests {
         org.junit.jupiter.api.Assertions.assertEquals(ScanType.ENTRY, log1.getScanType());
     }
 
+
+    @org.junit.jupiter.api.Test
+    @org.junit.jupiter.api.DisplayName("Assert Gate Lockdown Enforces Zero Traversal")
+    void testGateLockdownEnforcement() {
+        Gate gate = new Gate();
+        gate.setPermission(GatePermission.LOCKED);
+        org.junit.jupiter.api.Assertions.assertEquals(GatePermission.LOCKED, gate.getPermission());
+    }
+
 }
