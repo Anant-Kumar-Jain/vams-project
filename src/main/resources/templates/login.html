@@ -364,5 +364,19 @@ function autoFillDemoCredential(user, pass) {
     <span class="badge bg-primary">Demo Role Selected</span>
 </div>
 
+
+<script>
+function autoFillDemoCredential(user, pass) {
+    const uField = document.getElementById('username');
+    const pField = document.getElementById('password');
+    if (uField && pField) {
+        uField.value = user;
+        pField.value = pass;
+        uField.dispatchEvent(new Event('input', { bubbles: true }));
+        pField.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+}
+</script>
+
 </body>
 </html>
