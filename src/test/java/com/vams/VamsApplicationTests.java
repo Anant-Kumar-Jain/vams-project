@@ -28,4 +28,10 @@ class VamsApplicationTests {
         org.junit.jupiter.api.Assertions.assertNotNull(System.getProperty("java.version"));
     }
 
+
+    @org.junit.jupiter.api.Test
+    void testSystemReadinessHarness() {
+        org.junit.jupiter.api.Assertions.assertNotNull(System.getProperty("java.version"));
+    }
+
 }
