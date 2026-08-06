@@ -32,4 +32,9 @@ public class AccessRequest {
         return RequestStatus.APPROVED.equals(this.status) && (this.validUntil == null || this.validUntil.isAfter(java.time.LocalDateTime.now()));
     }
 
+
+    public boolean isPassActiveAndApproved() {
+        return RequestStatus.APPROVED.equals(this.status) && (this.validUntil == null || this.validUntil.isAfter(java.time.LocalDateTime.now()));
+    }
+
 }
