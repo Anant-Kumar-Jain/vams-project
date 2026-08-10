@@ -460,3 +460,14 @@ a:hover {
     pointer-events: none;
 }
 
+
+
+/* Modern Auth Floating Form Transitions */
+.auth-input-group {
+    position: relative;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.auth-input-group:focus-within {
+    transform: translateY(-1px);
+}
+
