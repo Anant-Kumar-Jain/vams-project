@@ -35,4 +35,11 @@ public class ScanLog {
         return java.time.Duration.between(this.timestamp, java.time.LocalDateTime.now()).getSeconds() < windowSeconds;
     }
 
+
+    @jakarta.persistence.Index(name = "idx_scan_user_time", columnList = "user_id, timestamp")
+    public boolean isRecentScan(long windowSeconds) {
+        if (this.timestamp == null) return false;
+        return java.time.Duration.between(this.timestamp, java.time.LocalDateTime.now()).getSeconds() < windowSeconds;
+    }
+
 }
