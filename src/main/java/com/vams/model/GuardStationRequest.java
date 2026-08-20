@@ -64,4 +64,9 @@ public class GuardStationRequest {
         return RequestStatus.PENDING.equals(this.stationStatus);
     }
 
+
+    public boolean isPendingApproval() {
+        return RequestStatus.PENDING.equals(this.stationStatus);
+    }
+
 }
