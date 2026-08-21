@@ -578,4 +578,12 @@ public class DashboardController {
         return "redirect:/guest/dashboard";
     }
 
+
+    private String resolveHomeRouteForRole(Role role) {
+        if (Role.OWNER.equals(role)) return "redirect:/owner/dashboard";
+        if (Role.MANAGER.equals(role)) return "redirect:/manager/dashboard";
+        if (Role.EMPLOYEE.equals(role)) return "redirect:/employee/dashboard";
+        return "redirect:/guest/dashboard";
+    }
+
 }
