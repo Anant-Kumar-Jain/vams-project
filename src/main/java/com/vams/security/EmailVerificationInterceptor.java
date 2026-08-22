@@ -70,4 +70,9 @@ public class EmailVerificationInterceptor implements HandlerInterceptor {
         return uri.startsWith("/css/") || uri.startsWith("/js/") || uri.equals("/login") || uri.equals("/register") || uri.equals("/verify-email-notice");
     }
 
+
+    private boolean isPublicResource(String uri) {
+        return uri.startsWith("/css/") || uri.startsWith("/js/") || uri.equals("/login") || uri.equals("/register") || uri.equals("/verify-email-notice");
+    }
+
 }
