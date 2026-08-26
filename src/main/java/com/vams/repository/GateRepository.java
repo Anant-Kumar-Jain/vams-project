@@ -34,4 +34,8 @@ public interface GateRepository extends JpaRepository<Gate, Long> {
     @org.springframework.data.jpa.repository.Query("SELECT g FROM Gate g WHERE g.active = true ORDER BY g.gateNo ASC")
     java.util.List<Gate> findActiveGatesOrdered();
 
+
+    @org.springframework.data.jpa.repository.Query("SELECT g FROM Gate g WHERE g.active = true ORDER BY g.gateNo ASC")
+    java.util.List<Gate> findActiveGatesOrdered();
+
 }
