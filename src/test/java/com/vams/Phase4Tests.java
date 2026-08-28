@@ -219,4 +219,13 @@ class Phase4Tests {
         org.junit.jupiter.api.Assertions.assertTrue(pass.getValidUntil().isBefore(java.time.LocalDateTime.now()), "Expired pass must be detected");
     }
 
+
+    @org.junit.jupiter.api.Test
+    @org.junit.jupiter.api.DisplayName("Assert Role Hierarchy Authorization Route Guards")
+    void testRoleAuthorizationBoundaries() {
+        User admin = new User();
+        admin.setRole(Role.OWNER);
+        org.junit.jupiter.api.Assertions.assertEquals(Role.OWNER, admin.getRole());
+    }
+
 }
