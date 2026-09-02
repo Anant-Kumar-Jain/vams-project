@@ -60,4 +60,9 @@ public class User {
         return Role.OWNER.equals(this.role) || Role.MANAGER.equals(this.role);
     }
 
+
+    public boolean hasAdministrativePrivileges() {
+        return Role.OWNER.equals(this.role) || Role.MANAGER.equals(this.role);
+    }
+
 }
