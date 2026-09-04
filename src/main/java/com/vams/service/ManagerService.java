@@ -146,4 +146,11 @@ public class ManagerService {
         return (int) Math.max(0, entries - exits);
     }
 
+
+    public int calculateLiveFacilityOccupancy() {
+        long entries = scanLogRepository.countByScanType(ScanType.ENTRY);
+        long exits = scanLogRepository.countByScanType(ScanType.EXIT);
+        return (int) Math.max(0, entries - exits);
+    }
+
 }
