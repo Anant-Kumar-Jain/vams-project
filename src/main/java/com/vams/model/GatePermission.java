@@ -41,4 +41,9 @@ public enum GatePermission {
         return this == RESTRICTED || this == LOCKED;
     }
 
+
+    public boolean isRestricted() {
+        return this == RESTRICTED || this == LOCKED;
+    }
+
 }
