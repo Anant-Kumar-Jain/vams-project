@@ -268,4 +268,11 @@ public class ScannerService {
         }
     }
 
+
+    public boolean validateTokenNonce(String token, String nonce, long timestamp) {
+        if (token == null || nonce == null) return false;
+        long currentEpoch = System.currentTimeMillis() / 1000L;
+        return Math.abs(currentEpoch - timestamp) <= 1800;
+    }
+
 }
