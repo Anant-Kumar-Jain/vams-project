@@ -139,4 +139,14 @@ public class ScannerController {
         return data;
     }
 
+
+    @org.springframework.web.bind.annotation.GetMapping("/api/gate/live-status")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public java.util.Map<String, Object> getLiveGateTelemetry() {
+        java.util.Map<String, Object> data = new java.util.HashMap<>();
+        data.put("timestamp", java.time.LocalDateTime.now());
+        data.put("status", "OPERATIONAL");
+        return data;
+    }
+
 }
