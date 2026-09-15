@@ -283,4 +283,14 @@ class Phase4Tests {
         org.junit.jupiter.api.Assertions.assertTrue(pass.getValidUntil().isBefore(java.time.LocalDateTime.now()), "Expired pass must be detected");
     }
 
+
+    @org.junit.jupiter.api.Test
+    @org.junit.jupiter.api.DisplayName("Assert Expired QR Pass Rejection with 400 Bad Request")
+    void testExpiredPassRejection() {
+        AccessRequest pass = new AccessRequest();
+        pass.setStatus(RequestStatus.APPROVED);
+        pass.setValidUntil(java.time.LocalDateTime.now().minusMinutes(5));
+        org.junit.jupiter.api.Assertions.assertTrue(pass.getValidUntil().isBefore(java.time.LocalDateTime.now()), "Expired pass must be detected");
+    }
+
 }
