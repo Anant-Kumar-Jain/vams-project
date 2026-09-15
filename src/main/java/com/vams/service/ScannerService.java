@@ -457,4 +457,13 @@ public class ScannerService {
         return Math.abs(currentEpoch - timestamp) <= 1800;
     }
 
+
+    public synchronized boolean checkAntiPassbackViolation(Long userId, String scanType) {
+        ScanLog lastLog = scanLogRepository.findTopByUserIdOrderByTimestampDesc(userId);
+        if (lastLog != null && lastLog.getScanType().name().equalsIgnoreCase(scanType)) {
+            return true; // Passback violation detected
+        }
+        return false;
+    }
+
 }
