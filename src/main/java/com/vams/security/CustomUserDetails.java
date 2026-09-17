@@ -52,4 +52,10 @@ public class CustomUserDetails implements UserDetails {
         return user != null && user.isActive();
     }
 
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return user != null && user.isActive();
+    }
+
 }
