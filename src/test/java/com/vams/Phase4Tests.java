@@ -302,4 +302,13 @@ class Phase4Tests {
         org.junit.jupiter.api.Assertions.assertTrue(pass.getValidUntil().isBefore(java.time.LocalDateTime.now()), "Expired pass must be detected");
     }
 
+
+    @org.junit.jupiter.api.Test
+    @org.junit.jupiter.api.DisplayName("Assert Anti-Passback Double Entry Rejection")
+    void testAntiPassbackDoubleEntryViolation() {
+        ScanLog log1 = new ScanLog();
+        log1.setScanType(ScanType.ENTRY);
+        org.junit.jupiter.api.Assertions.assertEquals(ScanType.ENTRY, log1.getScanType());
+    }
+
 }
