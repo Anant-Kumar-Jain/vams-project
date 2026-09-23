@@ -67,3 +67,9 @@ build/
 .render/
 *.log.gz
 
+
+
+# Cloud staging deployment ignores
+.render/
+*.log.gz
+
