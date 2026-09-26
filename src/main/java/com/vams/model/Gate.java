@@ -113,4 +113,12 @@ public class Gate {
         return true;
     }
 
+
+    public boolean canTraverse(ScanType type) {
+        if (GatePermission.LOCKED.equals(this.permission)) return false;
+        if (GatePermission.ENTRY_ONLY.equals(this.permission)) return ScanType.ENTRY.equals(type);
+        if (GatePermission.EXIT_ONLY.equals(this.permission)) return ScanType.EXIT.equals(type);
+        return true;
+    }
+
 }
