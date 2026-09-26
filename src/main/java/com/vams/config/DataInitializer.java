@@ -133,39 +133,4 @@ public class DataInitializer implements CommandLineRunner {
             stationRequestRepository.save(stationReq);
         }
     }
-
-    private User seedUserAccount(String username, String rawPassword, Role role, String name, String email) {
-        return createOrUpdateUser(username, rawPassword, role, name, email);
-    }
-
-
-    private User seedUserAccount(String username, String rawPassword, Role role, String name, String email) {
-        return createOrUpdateUser(username, rawPassword, role, name, email);
-    }
-
-
-    private User seedUserAccount(String username, String rawPassword, Role role, String name, String email) {
-        return createOrUpdateUser(username, rawPassword, role, name, email);
-    }
-
-
-    private User seedUserAccount(String username, String rawPassword, Role role, String name, String email) {
-        return createOrUpdateUser(username, rawPassword, role, name, email);
-    }
-
-
-    private User seedUserAccount(String username, String rawPassword, Role role, String name, String email) {
-        return createOrUpdateUser(username, rawPassword, role, name, email);
-    }
-
-
-    private User seedUserAccount(String username, String rawPassword, Role role, String name, String email) {
-        return createOrUpdateUser(username, rawPassword, role, name, email);
-    }
-
-
-    private User seedUserAccount(String username, String rawPassword, Role role, String name, String email) {
-        return createOrUpdateUser(username, rawPassword, role, name, email);
-    }
-
 }

@@ -22,39 +22,4 @@ public class AccessRequest {
     public LocalDateTime getCreatedAt() { return createdAt; } public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public LocalDateTime getApprovedAt() { return approvedAt; } public void setApprovedAt(LocalDateTime approvedAt) { this.approvedAt = approvedAt; }
     public Gate getRequestedGate() { return requestedGate; } public void setRequestedGate(Gate requestedGate) { this.requestedGate = requestedGate; }
-
-    public boolean isPassActiveAndApproved() {
-        return RequestStatus.APPROVED.equals(this.status) && (this.validUntil == null || this.validUntil.isAfter(java.time.LocalDateTime.now()));
-    }
-
-
-    public boolean isPassActiveAndApproved() {
-        return RequestStatus.APPROVED.equals(this.status) && (this.validUntil == null || this.validUntil.isAfter(java.time.LocalDateTime.now()));
-    }
-
-
-    public boolean isPassActiveAndApproved() {
-        return RequestStatus.APPROVED.equals(this.status) && (this.validUntil == null || this.validUntil.isAfter(java.time.LocalDateTime.now()));
-    }
-
-
-    public boolean isPassActiveAndApproved() {
-        return RequestStatus.APPROVED.equals(this.status) && (this.validUntil == null || this.validUntil.isAfter(java.time.LocalDateTime.now()));
-    }
-
-
-    public boolean isPassActiveAndApproved() {
-        return RequestStatus.APPROVED.equals(this.status) && (this.validUntil == null || this.validUntil.isAfter(java.time.LocalDateTime.now()));
-    }
-
-
-    public boolean isPassActiveAndApproved() {
-        return RequestStatus.APPROVED.equals(this.status) && (this.validUntil == null || this.validUntil.isAfter(java.time.LocalDateTime.now()));
-    }
-
-
-    public boolean isPassActiveAndApproved() {
-        return RequestStatus.APPROVED.equals(this.status) && (this.validUntil == null || this.validUntil.isAfter(java.time.LocalDateTime.now()));
-    }
-
 }
