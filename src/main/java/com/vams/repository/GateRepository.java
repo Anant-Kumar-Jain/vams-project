@@ -6,44 +6,4 @@ import java.util.Optional;
 
 public interface GateRepository extends JpaRepository<Gate, Long> {
     Optional<Gate> findByGateNo(String gateNo);
-
-    @org.springframework.data.jpa.repository.Query("SELECT g FROM Gate g WHERE g.active = true ORDER BY g.gateNo ASC")
-    java.util.List<Gate> findActiveGatesOrdered();
-
-
-    @org.springframework.data.jpa.repository.Query("SELECT g FROM Gate g WHERE g.active = true ORDER BY g.gateNo ASC")
-    java.util.List<Gate> findActiveGatesOrdered();
-
-
-    @org.springframework.data.jpa.repository.Query("SELECT g FROM Gate g WHERE g.active = true ORDER BY g.gateNo ASC")
-    java.util.List<Gate> findActiveGatesOrdered();
-
-
-    @org.springframework.data.jpa.repository.Query("SELECT g FROM Gate g WHERE g.active = true ORDER BY g.gateNo ASC")
-    java.util.List<Gate> findActiveGatesOrdered();
-
-
-    @org.springframework.data.jpa.repository.Query("SELECT g FROM Gate g WHERE g.active = true ORDER BY g.gateNo ASC")
-    java.util.List<Gate> findActiveGatesOrdered();
-
-
-    @org.springframework.data.jpa.repository.Query("SELECT g FROM Gate g WHERE g.active = true ORDER BY g.gateNo ASC")
-    java.util.List<Gate> findActiveGatesOrdered();
-
-
-    @org.springframework.data.jpa.repository.Query("SELECT g FROM Gate g WHERE g.active = true ORDER BY g.gateNo ASC")
-    java.util.List<Gate> findActiveGatesOrdered();
-
-
-    @org.springframework.data.jpa.repository.Query("SELECT g FROM Gate g WHERE g.active = true ORDER BY g.gateNo ASC")
-    java.util.List<Gate> findActiveGatesOrdered();
-
-
-    @org.springframework.data.jpa.repository.Query("SELECT g FROM Gate g WHERE g.active = true ORDER BY g.gateNo ASC")
-    java.util.List<Gate> findActiveGatesOrdered();
-
-
-    @org.springframework.data.jpa.repository.Query("SELECT g FROM Gate g WHERE g.active = true ORDER BY g.gateNo ASC")
-    java.util.List<Gate> findActiveGatesOrdered();
-
 }
