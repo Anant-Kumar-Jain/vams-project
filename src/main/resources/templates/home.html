@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAMS - Visitor & Access Management System</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #2563EB;
+            --primary-dark: #1D4ED8;
+            --primary-light: #EFF6FF;
+            --accent: #06B6D4;
+            --dark-bg: #0F172A;
+            --card-bg: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --border-color: #E2E8F0;
+            --success-color: #10B981;
+            --warning-color: #F59E0B;
+        }
+
+        * {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #F8FAFC;
+            color: var(--text-main);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, h4, .brand-title {
+            font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* Glassmorphism Navbar */
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link {
+            color: #CBD5E1 !important;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 8px 16px !important;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #FFFFFF !important;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.18) 0%, transparent 50%),
+                        radial-gradient(circle at 20% 80%, rgba(6, 182, 212, 0.12) 0%, transparent 50%),
+                        linear-gradient(180deg, #0F172A 0%, #1E293B 100%);
+            color: #FFFFFF;
+            padding: 100px 0 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50px;
+            padding: 6px 18px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            color: #38BDF8;
+            margin-bottom: 24px;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            line-height: 1.15;
+            font-weight: 800;
+            margin-bottom: 20px;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #60A5FA 0%, #38BDF8 50%, #A78BFA 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #94A3B8;
+            max-width: 680px;
+            margin-bottom: 35px;
+        }
+
+        /* Buttons */
+        .btn-cta-primary {
+            background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+            color: #FFFFFF !important;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        .btn-cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.5);
+            background: linear-gradient(135deg, #1D4ED8 0%, #1E40AF 100%);
+        }
+
+        .btn-cta-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: #FFFFFF !important;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            backdrop-filter: blur(8px);
+        }
+
+        .btn-cta-secondary:hover {
+            background: rgba(255, 255, 255, 0.16);
+            border-color: rgba(255, 255, 255, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .hero-stats-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-stat-pill {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 12px 18px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .stat-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        /* Modern Feature Cards */
+        .feature-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px 28px;
+            height: 100%;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -2px rgba(0, 0, 0, 0.02);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+            border-color: #BFDBFE;
+        }
+
+        .feature-icon-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+        }
+
+        /* Role Cards */
+        .role-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .role-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .role-card.owner::before { background: #8B5CF6; }
+        .role-card.manager::before { background: #2563EB; }
+        .role-card.employee::before { background: #10B981; }
+        .role-card.guest::before { background: #F59E0B; }
+
+        .role-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        /* Step Timeline */
+        .step-box {
+            position: relative;
+            padding: 30px 24px;
+            background: #FFFFFF;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .step-box:hover {
+            border-color: #93C5FD;
+            box-shadow: 0 10px 20px -3px rgba(37, 99, 235, 0.08);
+        }
+
+        .step-number {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #EFF6FF;
+            color: #2563EB;
+            font-weight: 800;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+            border: 1px solid #DBEAFE;
+        }
+
+        /* Tech Badges */
+        .tech-pill {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 30px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            color: #334155;
+            transition: all 0.2s ease;
+        }
+
+        .tech-pill:hover {
+            border-color: #2563EB;
+            color: #2563EB;
+            transform: translateY(-2px);
+        }
+
+        /* Section Headings */
+        .section-tag {
+            color: #2563EB;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .section-title {
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: #0F172A;
+            margin-bottom: 16px;
+        }
+
+        .section-desc {
+            color: #64748B;
+            font-size: 1.1rem;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        /* CTA Banner */
+        .cta-banner {
+            background: linear-gradient(135deg, #1E3A8A 0%, #0F172A 100%);
+            border-radius: 24px;
+            padding: 60px 40px;
+            color: #FFFFFF;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Footer */
+        .site-footer {
+            background: #0B1120 !important;
+            color: #E2E8F0 !important;
+            padding: 60px 0 30px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .site-footer p,
+        .site-footer span,
+        .site-footer div,
+        .site-footer .footer-text {
+            color: #CBD5E1 !important;
+        }
+
+        .site-footer strong,
+        .site-footer h5,
+        .site-footer h6 {
+            color: #FFFFFF !important;
+        }
+
+        .footer-link {
+            color: #93C5FD !important;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .footer-link:hover {
+            color: #FFFFFF !important;
+            transform: translateX(3px);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.4rem;
+            }
+            .section-title {
+                font-size: 1.8rem;
+            }
+            .hero-section {
+                padding: 60px 0 50px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+    <nav class="navbar navbar-expand-lg glass-nav py-3">
+        <div class="container">
+            <!-- Brand Logo -->
+            <a class="navbar-brand text-white d-flex align-items-center gap-2 fw-bold fs-4" href="/">
+                <div style="width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(135deg, #2563EB, #06B6D4); display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-qr-code text-white fs-5"></i>
+                </div>
+                <span>VAMS</span>
+            </a>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <i class="bi bi-list fs-2"></i>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="collapse navbar-collapse" id="mainNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#roles">Role Hierarchy</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#workflow">How It Works</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#security">Security & Audit</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#techstack">Tech Stack</a></li>
+                </ul>
+
+                <!-- Auth Buttons -->
+                <div class="d-flex align-items-center gap-2">
+                    <!-- If user is already logged in -->
+                    <div sec:authorize="isAuthenticated()">
+                        <a th:href="@{/dashboard}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-2 fw-semibold">
+                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                        </a>
+                    </div>
+                    
+                    <!-- If anonymous / guest -->
+                    <div sec:authorize="isAnonymous()" class="d-flex align-items-center gap-2">
+                        <a th:href="@{/login}" class="btn btn-sm btn-outline-light rounded-pill px-3 py-2 fw-semibold">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Log In
+                        </a>
+                        <a th:href="@{/register}" class="btn btn-sm btn-primary rounded-pill px-3 py-2 fw-semibold text-white" style="background: linear-gradient(135deg, #2563EB, #1D4ED8); border: none;">
+                            <i class="bi bi-person-plus me-1"></i> Sign Up
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ================= HERO SECTION ================= -->
+    <header class="hero-section">
+        <div class="container">
+            <div class="row align-items-center gy-5">
+                <div class="col-lg-7">
+                    <div class="hero-badge">
+                        <i class="bi bi-shield-check"></i> Enterprise Physical Access Control & Management
+                    </div>
+                    <h1 class="hero-title">
+                        Smart, Contactless <span class="text-gradient">QR Passports</span> for Modern Facilities
+                    </h1>
+                    <p class="hero-subtitle">
+                        VAMS replaces slow, vulnerable paper logbooks with automated digital access passes. 
+                        Empower your organization with multi-gate restrictions, live headcount tracking, immutable security audits, and instant mobile camera validation.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <a th:href="@{/register}" class="btn-cta-primary">
+                            <i class="bi bi-arrow-right-circle fs-5"></i> Get Started / Register
+                        </a>
+                        <a th:href="@{/login}" class="btn-cta-secondary">
+                            <i class="bi bi-key fs-5"></i> Sign In to Portal
+                        </a>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-4 text-white-50 pt-2 small">
+                        <div><i class="bi bi-check-circle-fill text-success me-1"></i> 100% Free & Open-Architecture</div>
+                        <div><i class="bi bi-check-circle-fill text-success me-1"></i> Zero RFID Scanner Hardware Required</div>
+                        <div><i class="bi bi-check-circle-fill text-success me-1"></i> Firebase Identity Verified</div>
+                    </div>
+                </div>
+
+                <!-- Right Side Hero Visual -->
+                <div class="col-lg-5">
+                    <div class="hero-stats-card">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h5 class="text-white mb-0 fw-bold">Live System Monitor</h5>
+                                <small class="text-muted" style="color: #94A3B8 !important;">Real-time Facility Analytics</small>
+                            </div>
+                            <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-2 rounded-pill">
+                                <span class="spinner-grow spinner-grow-sm me-1" role="status"></span> Active
+                            </span>
+                        </div>
+
+                        <!-- Card Pill 1 -->
+                        <div class="hero-stat-pill">
+                            <div class="stat-icon bg-primary bg-opacity-25 text-primary">
+                                <i class="bi bi-qr-code-scan"></i>
+                            </div>
+                            <div>
+                                <div class="text-white fw-bold small">Sub-Second Camera Scan</div>
+                                <div class="small" style="color: #94A3B8; font-size: 0.75rem;">Instant PASS / FAIL Gate Verification</div>
+                            </div>
+                        </div>
+
+                        <!-- Card Pill 2 -->
+                        <div class="hero-stat-pill">
+                            <div class="stat-icon bg-info bg-opacity-25 text-info">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <div>
+                                <div class="text-white fw-bold small">Dynamic Occupancy Counter</div>
+                                <div class="small" style="color: #94A3B8; font-size: 0.75rem;">Automatic Total In vs Total Out Formula</div>
+                            </div>
+                        </div>
+
+                        <!-- Card Pill 3 -->
+                        <div class="hero-stat-pill">
+                            <div class="stat-icon bg-warning bg-opacity-25 text-warning">
+                                <i class="bi bi-door-closed-fill"></i>
+                            </div>
+                            <div>
+                                <div class="text-white fw-bold small">Gate-Locked Guard Stations</div>
+                                <div class="small" style="color: #94A3B8; font-size: 0.75rem;">Strict Gate 1 / 2 / 3 Station Assignments</div>
+                            </div>
+                        </div>
+
+                        <!-- Card Pill 4 -->
+                        <div class="hero-stat-pill mb-0">
+                            <div class="stat-icon bg-purple bg-opacity-25 text-info">
+                                <i class="bi bi-journal-text"></i>
+                            </div>
+                            <div>
+                                <div class="text-white fw-bold small">Immutable Audit Stream</div>
+                                <div class="small" style="color: #94A3B8; font-size: 0.75rem;">Tamper-Resistant Historical Logs</div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= VALUE PROPOSITION / PROBLEM VS SOLUTION ================= -->
+    <section class="py-5 bg-white border-bottom">
+        <div class="container py-4">
+            <div class="row align-items-center gy-4">
+                <div class="col-lg-6">
+                    <span class="section-tag">Why VAMS?</span>
+                    <h2 class="fw-bold mb-3">Eliminate Security Loopholes and Paper Delays</h2>
+                    <p class="text-muted mb-4">
+                        Traditional security logbooks at building gates rely on unverified manual handwriting, fake phone numbers, unmonitored exits, and zero facility headcount visibility. VAMS completely transforms physical entry into an automated, transparent, and auditable digital workflow.
+                    </p>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="p-2 rounded-3 bg-danger bg-opacity-10 text-danger mt-1">
+                                <i class="bi bi-x-circle-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block text-dark">The Old Way:</strong>
+                                <span class="text-muted small">Visitors scribble in paper registers. Guards guess permissions. Zero knowledge of who is inside during emergencies.</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="p-2 rounded-3 bg-success bg-opacity-10 text-success mt-1">
+                                <i class="bi bi-check-circle-fill fs-5"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block text-dark">The VAMS Solution:</strong>
+                                <span class="text-muted small">Email-verified user registration, manager authorization, cryptographically unique QR passes, and live gate-level logging.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="p-4 p-md-5 rounded-4 bg-light border">
+                        <h5 class="fw-bold mb-3 text-primary"><i class="bi bi-lightning-charge-fill me-2"></i> Instant Benefits</h5>
+                        <ul class="list-unstyled mb-0 d-flex flex-column gap-3">
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="bi bi-check-lg text-primary fw-bold"></i>
+                                <span><strong>Touchless & Mobile:</strong> Scan with any smartphone camera or cheap tablet.</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="bi bi-check-lg text-primary fw-bold"></i>
+                                <span><strong>Real-time Security:</strong> Revoke or expire passes with a single click.</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="bi bi-check-lg text-primary fw-bold"></i>
+                                <span><strong>Zero Hardware Investment:</strong> No proprietary RFID readers or smartcards.</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="bi bi-check-lg text-primary fw-bold"></i>
+                                <span><strong>Complete Accountability:</strong> Every approval, gate check, and entry timestamp recorded forever.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= CORE FEATURES ================= -->
+    <section id="features" class="py-5">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <span class="section-tag">System Capabilities</span>
+                <h2 class="section-title">Built for Real-World Security Operations</h2>
+                <p class="section-desc">Everything needed to manage visitors, guards, gates, and approvals under one unified platform.</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Feature 1 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper bg-primary bg-opacity-10 text-primary">
+                            <i class="bi bi-qr-code"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Dynamic QR Passes</h5>
+                        <p class="text-muted small mb-0">
+                            Unique cryptographic tokens generated automatically upon manager approval. Rendered instantly on user dashboard with full status indicators.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper bg-info bg-opacity-10 text-info">
+                            <i class="bi bi-camera"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">High-Speed Scanner</h5>
+                        <p class="text-muted small mb-0">
+                            HTML5 camera integration works seamlessly on Android, iOS, tablets, and laptops. Sub-second decoding with large visual PASS/FAIL cards.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper bg-success bg-opacity-10 text-success">
+                            <i class="bi bi-diagram-3-fill"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Multi-Gate Policy Lock</h5>
+                        <p class="text-muted small mb-0">
+                            Configure individual gates with granular permissions: Public, Employee Only, VIP Restricted, or All Access. Guard stations strictly enforce rules.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper bg-warning bg-opacity-10 text-warning">
+                            <i class="bi bi-shield-lock-fill"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Guard Station Workflow</h5>
+                        <p class="text-muted small mb-0">
+                            Employees select their stationed gate; Managers confirm deployment. Scanner locks automatically to that gate to prevent erroneous gate scans.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper bg-danger bg-opacity-10 text-danger">
+                            <i class="bi bi-speedometer"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Live Building Headcount</h5>
+                        <p class="text-muted small mb-0">
+                            Instant calculation of active occupants inside the facility (<span class="font-monospace">Total Entries - Total Exits</span>). Vital for safety and capacity limits.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper bg-secondary bg-opacity-10 text-dark">
+                            <i class="bi bi-database-lock"></i>
+                        </div>
+                        <h5 class="fw-bold mb-2">Dual Immutable Logs</h5>
+                        <p class="text-muted small mb-0">
+                            Distinct audit records for Administrative Changes (<span class="font-monospace">SystemLog</span>) and Gate Movements (<span class="font-monospace">ScanLog</span>) that cannot be altered.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= ROLE HIERARCHY & ECOSYSTEM ================= -->
+    <section id="roles" class="py-5 bg-white border-top border-bottom">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <span class="section-tag">Role Ecosystem</span>
+                <h2 class="section-title">Designed for Every Stakeholder</h2>
+                <p class="section-desc">A structured permission hierarchy guarantees strict separation of concerns from gate guards to executive owners.</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Role: Owner -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="role-card owner">
+                        <span class="role-badge bg-purple bg-opacity-10 text-purple" style="background: #F3E8FF; color: #7C3AED;">Executive</span>
+                        <h4 class="fw-bold mb-2">Owner</h4>
+                        <p class="text-muted small mb-3">Super-administrator with full organizational control.</p>
+                        <ul class="list-unstyled small mb-0 d-flex flex-column gap-2 text-secondary">
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Create & Manage Gates</li>
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Provision Managers & Staff</li>
+                            <li><i class="bi bi-check2 text-primary me-2"></i> View Global Audit Trails</li>
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Real-time Occupancy Metrics</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Role: Manager -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="role-card manager">
+                        <span class="role-badge" style="background: #DBEAFE; color: #1D4ED8;">Operations</span>
+                        <h4 class="fw-bold mb-2">Manager</h4>
+                        <p class="text-muted small mb-3">Day-to-day oversight of visitors and stationed guards.</p>
+                        <ul class="list-unstyled small mb-0 d-flex flex-column gap-2 text-secondary">
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Approve/Reject Requests</li>
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Assign Stationed Guards</li>
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Daily Approved & Exit Lists</li>
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Instant Revoke Access</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Role: Employee / Guard -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="role-card employee">
+                        <span class="role-badge" style="background: #D1FAE5; color: #047857;">On-Ground</span>
+                        <h4 class="fw-bold mb-2">Guard / Employee</h4>
+                        <p class="text-muted small mb-3">Frontline security personnel stationed at gates.</p>
+                        <ul class="list-unstyled small mb-0 d-flex flex-column gap-2 text-secondary">
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Request Stationed Gate</li>
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Locked Gate Camera Scanner</li>
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Entry / Exit Toggle</li>
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Visual PASS/FAIL Feedback</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Role: Guest / Visitor -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="role-card guest">
+                        <span class="role-badge" style="background: #FEF3C7; color: #B45309;">Visitor</span>
+                        <h4 class="fw-bold mb-2">Guest / Visitor</h4>
+                        <p class="text-muted small mb-3">Seamless registration and contactless pass retrieval.</p>
+                        <ul class="list-unstyled small mb-0 d-flex flex-column gap-2 text-secondary">
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Self-Service Registration</li>
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Email Verification Notice</li>
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Auto-Generated QR Pass</li>
+                            <li><i class="bi bi-check2 text-primary me-2"></i> Mobile Friendly Display</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= STEP-BY-STEP WORKFLOW ================= -->
+    <section id="workflow" class="py-5">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <span class="section-tag">How It Works</span>
+                <h2 class="section-title">End-to-End Access Journey</h2>
+                <p class="section-desc">From initial registration to physical gate scan in four streamlined steps.</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Step 1 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="step-box">
+                        <div class="step-number">1</div>
+                        <h5 class="fw-bold mb-2">Register & Verify</h5>
+                        <p class="text-muted small mb-0">
+                            Users sign up as Guest or Employee and select their requested gate. A secure Firebase verification link ensures verified email authenticity.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="step-box">
+                        <div class="step-number">2</div>
+                        <h5 class="fw-bold mb-2">Manager Review</h5>
+                        <p class="text-muted small mb-0">
+                            Managers review pending requests in their dashboard, setting access tier (Public, VIP) and validity (Single / Ongoing) before approving.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="step-box">
+                        <div class="step-number">3</div>
+                        <h5 class="fw-bold mb-2">Guard Stationing</h5>
+                        <p class="text-muted small mb-0">
+                            Guards choose their designated gate and request assignment. Once approved, the scanner automatically locks to that gate.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="step-box">
+                        <div class="step-number">4</div>
+                        <h5 class="fw-bold mb-2">Fast QR Scan</h5>
+                        <p class="text-muted small mb-0">
+                            At the gate, the visitor presents their QR pass to the guard's camera. The system checks validity, gate permission, and logs entry/exit.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= SECURITY & AUDITING ================= -->
+    <section id="security" class="py-5 bg-white border-top border-bottom">
+        <div class="container py-4">
+            <div class="row align-items-center gy-4">
+                <div class="col-lg-6">
+                    <span class="section-tag">Security & Compliance</span>
+                    <h2 class="fw-bold mb-3">Enterprise-Grade Audit Integrity</h2>
+                    <p class="text-muted mb-4">
+                        Accountability is the backbone of facility security. VAMS ensures every single user state change and physical movement is recorded in an immutable historical ledger.
+                    </p>
+
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex gap-3">
+                            <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                                <i class="bi bi-file-earmark-lock2-fill"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Immutable System Logs</h6>
+                                <p class="text-muted small mb-0">Tracks all administrative events: account creation, approvals, rejections, and access revocations with actor timestamps.</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <div class="stat-icon bg-success bg-opacity-10 text-success">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Gate Scan Logs</h6>
+                                <p class="text-muted small mb-0">Records every physical badge-in and badge-out event, associating user ID, gate location, timestamp, and ENTRY/EXIT status.</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                                <i class="bi bi-envelope-check-fill"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Firebase Email Authentication</h6>
+                                <p class="text-muted small mb-0">Eliminates dummy or bot signups by restricting dashboard access until email verification tokens are confirmed.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card p-4 rounded-4 shadow-sm border">
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-3">
+                            <span class="fw-bold text-dark"><i class="bi bi-terminal-fill me-2 text-primary"></i> Live Security Log Sample</span>
+                            <span class="badge bg-secondary">Immutable</span>
+                        </div>
+                        <div class="font-monospace small text-muted" style="background: #F1F5F9; padding: 16px; border-radius: 12px; font-size: 0.8rem; line-height: 1.8;">
+                            <div><span class="text-primary">[2026-10-18 14:15]</span> <span class="badge bg-success">ENTRY</span> user: rahul_singh @ Gate 1 (Main Entrance)</div>
+                            <div><span class="text-primary">[2026-10-18 14:18]</span> <span class="badge bg-info text-dark">APPROVED</span> user: deepak_v by manager: admin</div>
+                            <div><span class="text-primary">[2026-10-18 14:22]</span> <span class="badge bg-danger">EXIT</span> user: ananya_k @ Gate 2 (West Wing)</div>
+                            <div><span class="text-primary">[2026-10-18 14:30]</span> <span class="badge bg-success">ENTRY</span> user: vishal_m @ Gate 1 (Main Entrance)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= TECH STACK ================= -->
+    <section id="techstack" class="py-5">
+        <div class="container py-4 text-center">
+            <span class="section-tag">Architecture</span>
+            <h2 class="section-title">Modern & Resilient Technology Stack</h2>
+            <p class="section-desc mb-5">Built on rock-solid enterprise Java engineering and cloud-native serverless architecture.</p>
+
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                <div class="tech-pill">
+                    <i class="bi bi-filetype-java text-danger fs-5"></i> Java 17 LTS
+                </div>
+                <div class="tech-pill">
+                    <i class="bi bi-box-seam-fill text-success fs-5"></i> Spring Boot 4
+                </div>
+                <div class="tech-pill">
+                    <i class="bi bi-shield-fill-check text-primary fs-5"></i> Spring Security & BCrypt
+                </div>
+                <div class="tech-pill">
+                    <i class="bi bi-database-fill-gear text-info fs-5"></i> Spring Data JPA & Hibernate
+                </div>
+                <div class="tech-pill">
+                    <i class="bi bi-cloud-check-fill text-warning fs-5"></i> TiDB Serverless / MySQL
+                </div>
+                <div class="tech-pill">
+                    <i class="bi bi-google text-danger fs-5"></i> Firebase Authentication
+                </div>
+                <div class="tech-pill">
+                    <i class="bi bi-bootstrap-fill text-purple fs-5" style="color: #7952B3;"></i> Bootstrap 5 & Icons
+                </div>
+                <div class="tech-pill">
+                    <i class="bi bi-camera-video-fill text-dark fs-5"></i> HTML5 QR Code Engine
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= CTA BANNER ================= -->
+    <section class="py-5">
+        <div class="container">
+            <div class="cta-banner text-center">
+                <h2 class="fw-bold mb-3 text-white">Ready to Secure Your Premises?</h2>
+                <p class="text-white-50 max-w-600 mx-auto mb-4" style="max-width: 600px;">
+                    Get started in seconds. Create your account or sign in to experience frictionless, modern access control.
+                </p>
+                <div class="d-flex justify-content-center flex-wrap gap-3">
+                    <a th:href="@{/register}" class="btn btn-primary rounded-pill px-4 py-3 fw-bold text-white" style="background: linear-gradient(135deg, #2563EB, #06B6D4); border: none;">
+                        <i class="bi bi-person-plus me-1"></i> Register Free Account
+                    </a>
+                    <a th:href="@{/login}" class="btn btn-outline-light rounded-pill px-4 py-3 fw-bold">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Access Portal Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="row gy-4 mb-4">
+                <div class="col-lg-5">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #2563EB, #06B6D4); display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-qr-code text-white"></i>
+                        </div>
+                        <h5 class="text-white mb-0 fw-bold">VAMS</h5>
+                    </div>
+                    <p class="small mb-3" style="max-width: 380px; color: #E2E8F0 !important;">
+                        Visitor Access Management System (VAMS) is an enterprise-grade digital physical access control solution engineered with Java Spring Boot, MySQL, and dynamic QR passports.
+                    </p>
+                    <div class="small text-success d-inline-flex align-items-center gap-2 bg-success bg-opacity-10 px-3 py-1 rounded-pill border border-success border-opacity-25">
+                        <span class="spinner-grow spinner-grow-sm" role="status"></span> All Systems Operational
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                    <h6 class="text-white fw-bold mb-3">Quick Navigation</h6>
+                    <a th:href="@{/login}" class="footer-link">Login Portal</a>
+                    <a th:href="@{/register}" class="footer-link">Register Account</a>
+                    <a th:href="@{/forgot-password}" class="footer-link">Password Recovery</a>
+                    <a th:href="@{/verify}" class="footer-link">Email Verification</a>
+                </div>
+
+                <div class="col-6 col-lg-4">
+                    <h6 class="text-white fw-bold mb-3">Project Roles</h6>
+                    <span class="d-block small mb-2" style="color: #CBD5E1 !important;"><strong class="text-white">Owner:</strong> Complete System Oversight & Gate Setup</span>
+                    <span class="d-block small mb-2" style="color: #CBD5E1 !important;"><strong class="text-white">Manager:</strong> Approvals & Guard Deployments</span>
+                    <span class="d-block small mb-2" style="color: #CBD5E1 !important;"><strong class="text-white">Guard:</strong> On-Ground QR Camera Scanning</span>
+                    <span class="d-block small" style="color: #CBD5E1 !important;"><strong class="text-white">Guest:</strong> Fast Self-Service Pass Creation</span>
+                </div>
+            </div>
+
+            <div class="pt-4 mt-4 border-top d-flex flex-wrap justify-content-between align-items-center small" style="border-color: rgba(255, 255, 255, 0.15) !important; color: #CBD5E1 !important;">
+                <div>&copy; 2026 VAMS - Visitor Access Management System. All rights reserved.</div>
+                <div>Engineered with Java 17 & Spring Boot</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>VAMS - Today's Approved List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-white pb-5">
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card rounded-0 border-dark mb-4">
+                <div class="card-header rounded-0 border-dark border-bottom">
+                    <h5 class="mb-0 fw-bold text-uppercase">TODAY'S ACTIVITY LIST</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row-padded row align-items-center bg-light border-bottom border-dark">
+                        <div class="col-12 fw-bold">(i) ACCOUNTS APPROVED / REJECTED / REVOKED TODAY</div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered border-dark mb-0 table-sm" style="font-size: 0.9rem;">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Action</th>
+                                    <th>Target User</th>
+                                    <th>Processed By</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="log : ${systemLogs}">
+                                    <td th:text="${#temporals.format(log.timestamp, 'HH:mm:ss')}"></td>
+                                    <td th:text="${log.actionType}"></td>
+                                    <td th:text="${log.targetUsername}"></td>
+                                    <td th:text="${log.actorUsername}"></td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(systemLogs)}">
+                                    <td colspan="4" class="text-center">No account approvals/rejections today.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row-padded row align-items-center bg-light border-top border-bottom border-dark mt-4">
+                        <div class="col-12 fw-bold">(ii) ENTER / EXIT SCANS TODAY</div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered border-dark mb-0 table-sm" style="font-size: 0.9rem;">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Action</th>
+                                    <th>User</th>
+                                    <th>Gate Location</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="scan : ${scanLogs}">
+                                    <td th:text="${#temporals.format(scan.timestamp, 'HH:mm:ss')}"></td>
+                                    <td>
+                                        <span th:if="${scan.scanType.name() == 'ENTRY'}" class="badge bg-success">ENTER</span>
+                                        <span th:if="${scan.scanType.name() == 'EXIT'}" class="badge bg-danger">EXIT</span>
+                                    </td>
+                                    <td th:text="${scan.user.username}"></td>
+                                    <td th:text="${scan.gateLocation}"></td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(scanLogs)}">
+                                    <td colspan="4" class="text-center">No enters or exits today.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="row-padded row border-top border-dark mt-3">
+                        <div class="col-12">
+                            <a href="/manager/dashboard" class="btn-primary-action">RETURN TO DASHBOARD</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

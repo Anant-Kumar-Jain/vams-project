@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Owner - Audit Logs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="modern-auth-container">
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark sticky-top" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); box-shadow: 0 4px 15px rgba(13,110,253,0.3); z-index: 1050;">
+  <div class="container-fluid px-4">
+    <div class="d-flex align-items-center">
+        <button class="btn btn-link text-white p-0 me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#ownerSidebar">
+          <i class="bi bi-list fs-2"></i>
+        </button>
+        <a class="navbar-brand fw-bold m-0" href="/owner/dashboard"><i class="bi bi-shield-check me-2"></i>Owner Panel</a>
+    </div>
+    <form th:action="@{/logout}" method="post" class="d-flex m-0">
+        <button type="submit" class="btn btn-sm btn-light text-primary rounded-pill px-4 fw-bold shadow-sm">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<!-- Offcanvas Sidebar -->
+<div class="offcanvas offcanvas-start border-0 shadow" tabindex="-1" id="ownerSidebar" style="width: 280px; background: #ffffff;">
+  <div class="offcanvas-header border-bottom px-4 py-3">
+    <h5 class="offcanvas-title fw-bold text-primary"><i class="bi bi-shield-check me-2"></i>Menu</h5>
+    <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body p-3">
+    <div class="text-muted small fw-bold mb-3 px-3">DASHBOARD</div>
+    <ul class="nav flex-column gap-2 mb-4">
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-dark" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/dashboard"><i class="bi bi-grid-fill me-3 text-muted"></i>Overview</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-dark" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/create-user"><i class="bi bi-person-plus-fill me-3 text-muted"></i>Create User</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-dark" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/requests"><i class="bi bi-inbox-fill me-3 text-muted"></i>Access Requests</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-dark" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/users"><i class="bi bi-people-fill me-3 text-muted"></i>System Users</a>
+      </li>
+    </ul>
+    
+    <div class="text-muted small fw-bold mb-3 px-3">SYSTEM</div>
+    <ul class="nav flex-column gap-2">
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-primary bg-primary bg-opacity-10" href="/owner/logs"><i class="bi bi-journal-text me-3"></i>Audit Logs</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-dark" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/gates"><i class="bi bi-door-open-fill me-3 text-muted"></i>Gates</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="modern-auth-card p-4 p-md-5 mb-5 shadow-sm">
+                
+                <!-- Master System Activity Logs -->
+                <h5 class="modern-auth-title fs-4 mb-4"><i class="bi bi-journal-text me-2"></i>Master System Activity Logs</h5>
+                
+                <!-- Filters -->
+                <div class="row mb-4 bg-light p-3 rounded-3 border mx-0">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label class="small fw-bold text-muted mb-1">Filter by Action</label>
+                        <select id="actionFilter" class="form-select form-select-sm border-0 shadow-sm" onchange="filterLogs()">
+                            <option value="ALL">All Actions</option>
+                            <option value="GATE_ENTRY">Gate Entry</option>
+                            <option value="GATE_EXIT">Gate Exit</option>
+                            <option value="ACCOUNT_CREATED">Account Created</option>
+                            <option value="REQUEST_APPROVED">Request Approved</option>
+                            <option value="REQUEST_REJECTED">Request Rejected</option>
+                            <option value="ACCESS_SUSPENDED">Access Suspended</option>
+                            <option value="ACCESS_REINSTATED">Access Reinstated</option>
+                            <option value="ACCESS_REVOKED">Access Revoked</option>
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="small fw-bold text-muted mb-1">Search by User (Actor or Target)</label>
+                        <div class="input-group input-group-sm shadow-sm">
+                            <span class="input-group-text border-0 bg-white"><i class="bi bi-search"></i></span>
+                            <input type="text" id="userSearch" class="form-control border-0" placeholder="Type username or email..." onkeyup="filterLogs()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                    <table class="table table-hover align-middle mb-0 border" id="logsTable">
+                        <thead class="table-light sticky-top">
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Actor</th>
+                                <th>Action</th>
+                                <th>Target</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="log : ${allLogs}" class="log-row" th:data-action="${log.actionType}">
+                                <td class="small text-muted" th:text="${#temporals.format(log.timestamp, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                <td class="fw-bold text-primary log-actor" th:text="${log.actorUsername}"></td>
+                                <td>
+                                    <span class="badge bg-secondary" th:text="${log.actionType}"></span>
+                                </td>
+                                <td class="fw-bold log-target" th:text="${log.targetUsername}"></td>
+                                <td class="small" th:text="${log.details}"></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(allLogs)}">
+                                <td colspan="5" class="text-center text-muted py-4">No system logs recorded yet.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Vanilla JS Filtering Logic
+    window.filterLogs = function() {
+        const actionFilter = document.getElementById('actionFilter').value.toUpperCase();
+        const searchQuery = document.getElementById('userSearch').value.toLowerCase();
+        
+        const rows = document.querySelectorAll('.log-row');
+        
+        rows.forEach(row => {
+            const rowAction = row.getAttribute('data-action').toUpperCase();
+            const actor = row.querySelector('.log-actor').textContent.toLowerCase();
+            const target = row.querySelector('.log-target').textContent.toLowerCase();
+            
+            let actionMatch = (actionFilter === 'ALL' || rowAction === actionFilter);
+            let searchMatch = (searchQuery === '' || actor.includes(searchQuery) || target.includes(searchQuery));
+            
+            if (actionMatch && searchMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -78,44 +78,4 @@ public class SystemLog {
     public void setDetails(String details) {
         this.details = details;
     }
-
-    public boolean isSecurityAuditEvent() {
-        return "ACCESS_REVOKED".equals(this.action) || "SECURITY_ALERT".equals(this.action);
-    }
-
-
-    public boolean isSecurityAuditEvent() {
-        return "ACCESS_REVOKED".equals(this.action) || "SECURITY_ALERT".equals(this.action);
-    }
-
-
-    public boolean isSecurityAuditEvent() {
-        return "ACCESS_REVOKED".equals(this.action) || "SECURITY_ALERT".equals(this.action);
-    }
-
-
-    public boolean isSecurityAuditEvent() {
-        return "ACCESS_REVOKED".equals(this.action) || "SECURITY_ALERT".equals(this.action);
-    }
-
-
-    public boolean isSecurityAuditEvent() {
-        return "ACCESS_REVOKED".equals(this.action) || "SECURITY_ALERT".equals(this.action);
-    }
-
-
-    public boolean isSecurityAuditEvent() {
-        return "ACCESS_REVOKED".equals(this.action) || "SECURITY_ALERT".equals(this.action);
-    }
-
-
-    public boolean isSecurityAuditEvent() {
-        return "ACCESS_REVOKED".equals(this.action) || "SECURITY_ALERT".equals(this.action);
-    }
-
-
-    public boolean isSecurityAuditEvent() {
-        return "ACCESS_REVOKED".equals(this.action) || "SECURITY_ALERT".equals(this.action);
-    }
-
 }

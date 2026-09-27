@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manager Overview - VAMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="modern-auth-container">
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark sticky-top" style="background: linear-gradient(135deg, #198754 0%, #157347 100%); box-shadow: 0 4px 15px rgba(25,135,84,0.3) !important; z-index: 1050;">
+  <div class="container-fluid px-4">
+    <div class="d-flex align-items-center">
+        <button class="btn btn-link text-white p-0 me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#managerSidebar">
+          <i class="bi bi-list fs-2"></i>
+        </button>
+        <a class="navbar-brand fw-bold m-0" href="/manager/dashboard"><i class="bi bi-building-check me-2"></i>Manager Panel</a>
+    </div>
+    <form th:action="@{/logout}" method="post" class="d-flex m-0">
+        <button type="submit" class="btn btn-sm btn-light text-success rounded-pill px-4 fw-bold shadow-sm" style="border-radius: 20px !important;">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<!-- Offcanvas Sidebar -->
+<div class="offcanvas offcanvas-start border-0 shadow" tabindex="-1" id="managerSidebar" style="width: 280px; background: #ffffff;">
+  <div class="offcanvas-header border-bottom px-4 py-3">
+    <h5 class="offcanvas-title fw-bold text-success"><i class="bi bi-building-check me-2"></i>Menu</h5>
+    <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body p-3">
+    <div class="text-muted small fw-bold mb-3 px-3">OPERATIONS</div>
+    <ul class="nav flex-column gap-2 mb-4">
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-success bg-success bg-opacity-10" style="border-radius: 8px !important;" href="/manager/dashboard"><i class="bi bi-grid-fill me-3"></i>Overview</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-dark" style="border-radius: 8px !important;" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/manager/requests"><i class="bi bi-inbox-fill me-3 text-muted"></i>Pending Requests</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-dark" style="border-radius: 8px !important;" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/manager/today-approved"><i class="bi bi-clock-history me-3 text-muted"></i>Today's Log</a>
+      </li>
+    </ul>
+    
+    <div class="text-muted small fw-bold mb-3 px-3">SCANNER</div>
+    <ul class="nav flex-column gap-2">
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-dark" style="border-radius: 8px !important;" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/scanner"><i class="bi bi-upc-scan me-3 text-muted"></i>QR Scanner</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-11 col-xl-10">
+            <!-- Welcome Header -->
+            <div class="d-flex align-items-center mb-4">
+                <div class="modern-auth-icon me-3 bg-success bg-opacity-10 text-success p-3" style="border-radius: 12px !important;">
+                    <i class="bi bi-building-check fs-3"></i>
+                </div>
+                <div>
+                    <h2 class="modern-auth-title mb-0">Building Overview</h2>
+                    <p class="text-muted mb-0">Welcome, <span th:text="${#authentication.name}">Manager</span>. Live occupancy and actual synchronized personnel status.</p>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="modern-auth-card p-4 p-md-5 mb-5 shadow-sm bg-white border" style="border-radius: 16px !important;">
+                
+                <h4 class="fw-bold mb-4 border-bottom pb-2">Live Occupancy Status</h4>
+                
+                <div class="row g-4 mb-4">
+                    <div class="col-md-5 col-lg-3">
+                        <div class="card bg-primary text-white border-0 shadow-sm h-100" style="border-radius: 14px !important;">
+                            <div class="card-body p-4 text-center d-flex flex-column justify-content-center">
+                                <i class="bi bi-people-fill fs-1 mb-2 opacity-75"></i>
+                                <h1 class="display-4 fw-bold mb-0" th:text="${occupancy}">0</h1>
+                                <p class="mb-0 fw-semibold text-uppercase small opacity-75 mt-2">Total In Building</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-7 col-lg-9">
+                        <div class="row g-3 h-100">
+                            <!-- Role Breakdown: Synchronized with Master Directory Actual Data -->
+                            <div class="col-6 col-sm-3">
+                                <div class="card border-0 bg-light shadow-sm h-100" style="border-radius: 12px !important;">
+                                    <div class="card-body text-center d-flex flex-column justify-content-center p-3">
+                                        <h3 class="fw-bold text-dark mb-0" th:text="${employeeCount}">0</h3>
+                                        <p class="mb-0 text-muted small fw-semibold">EMPLOYEES</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-sm-3">
+                                <div class="card border-0 bg-light shadow-sm h-100" style="border-radius: 12px !important;">
+                                    <div class="card-body text-center d-flex flex-column justify-content-center p-3">
+                                        <h3 class="fw-bold text-dark mb-0" th:text="${managerCount}">0</h3>
+                                        <p class="mb-0 text-muted small fw-semibold">MANAGERS</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-sm-3">
+                                <div class="card border-0 bg-light shadow-sm h-100" style="border-radius: 12px !important;">
+                                    <div class="card-body text-center d-flex flex-column justify-content-center p-3">
+                                        <h3 class="fw-bold text-dark mb-0" th:text="${guestCount}">0</h3>
+                                        <p class="mb-0 text-muted small fw-semibold">GUESTS</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-sm-3">
+                                <div class="card border-0 bg-danger bg-opacity-10 shadow-sm h-100" style="border-radius: 12px !important;">
+                                    <div class="card-body text-center d-flex flex-column justify-content-center p-3">
+                                        <h3 class="fw-bold text-danger mb-0" th:text="${revokedCount}">0</h3>
+                                        <p class="mb-0 text-danger small fw-semibold">REVOKED</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Access Level Breakdown -->
+                            <div class="col-sm-6 mt-3">
+                                <div class="card border-0 bg-success bg-opacity-10 shadow-sm h-100" style="border-radius: 12px !important;">
+                                    <div class="card-body text-center py-3">
+                                        <h4 class="fw-bold text-success mb-0" th:text="${publicAccessCount}">0</h4>
+                                        <p class="mb-0 text-success small fw-semibold">PUBLIC ACCESS PASSES</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 mt-3">
+                                <div class="card border-0 bg-warning bg-opacity-10 shadow-sm h-100" style="border-radius: 12px !important;">
+                                    <div class="card-body text-center py-3">
+                                        <h4 class="fw-bold text-dark mb-0" th:text="${restrictedAccessCount}">0</h4>
+                                        <p class="mb-0 text-muted small fw-semibold">RESTRICTED ACCESS PASSES</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-3 mt-4 pt-3 border-top">
+                    <a th:href="@{/manager/requests}" class="btn btn-success fw-bold px-4 py-2 rounded-pill shadow-sm" style="border-radius: 20px !important;"><i class="bi bi-inbox me-2"></i>Review Pending Requests</a>
+                    <a th:href="@{/scanner}" class="btn btn-outline-success fw-bold px-4 py-2 rounded-pill" style="border-radius: 20px !important;"><i class="bi bi-upc-scan me-2"></i>Open Scanner</a>
+                    <a th:href="@{/manager/today-approved}" class="btn btn-outline-secondary fw-bold px-4 py-2 rounded-pill" style="border-radius: 20px !important;"><i class="bi bi-clock-history me-2"></i>Today's Activity Log</a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

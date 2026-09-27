@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Verification Result - VAMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="modern-auth-container pb-5">
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark sticky-top" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); box-shadow: 0 4px 15px rgba(13,110,253,0.3); z-index: 1050;">
+  <div class="container-fluid px-4">
+    <div class="d-flex align-items-center">
+        <a class="navbar-brand fw-bold m-0" href="javascript:history.back()"><i class="bi bi-arrow-left me-2"></i>Back</a>
+    </div>
+    <div class="text-white fw-bold"><i class="bi bi-upc-scan me-2"></i>Scanner Result</div>
+  </div>
+</nav>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            
+            <div class="modern-auth-card p-4 p-md-5 mb-5 shadow-sm bg-white rounded-4 border-0 text-center" style="box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important;">
+                
+                <!-- SUCCESS ICON (If Passed) -->
+                <div th:if="${result.isPass}" class="mb-4">
+                    <div class="d-inline-block p-4 rounded-circle bg-success bg-opacity-10 mb-3 text-success">
+                        <i class="bi bi-check-circle-fill" style="font-size: 4rem;"></i>
+                    </div>
+                    <h2 class="fw-bold text-success">ACCESS GRANTED</h2>
+                    <p class="text-muted fw-bold">Scan Type: <span class="badge bg-success ms-1" th:text="${result.scanType}"></span></p>
+                </div>
+
+                <!-- FAIL ICON (If Failed) -->
+                <div th:unless="${result.isPass}" class="mb-4">
+                    <div class="d-inline-block p-4 rounded-circle bg-danger bg-opacity-10 mb-3 text-danger">
+                        <i class="bi bi-x-circle-fill" style="font-size: 4rem;"></i>
+                    </div>
+                    <h2 class="fw-bold text-danger">ACCESS DENIED</h2>
+                    <p class="text-danger fw-bold bg-danger bg-opacity-10 d-inline-block px-3 py-2 rounded-3 mt-2" th:text="${result.reason}"></p>
+                </div>
+
+                <hr class="my-4 text-muted">
+                
+                <!-- SUCCESSFUL TOKEN LOOKUP BLOCK -->
+                <div class="text-start" th:if="${result.request != null}">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">User Details</h5>
+                    
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted fw-bold small">USER</div>
+                        <div class="col-7 fw-bold" th:text="${result.request.user.username}"></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted fw-bold small">ROLE</div>
+                        <div class="col-7" th:text="${result.request.user.role}"></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted fw-bold small">ACCESS LEVEL</div>
+                        <div class="col-7"><span class="badge bg-primary" th:text="${result.request.accessLevel}"></span></div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col-5 text-muted fw-bold small">VALID UNTIL</div>
+                        <div class="col-7" th:text="${result.request.validityType}"></div>
+                    </div>
+                    <div class="row mb-4">
+                        <div class="col-5 text-muted fw-bold small">QR TOKEN</div>
+                        <div class="col-7 font-monospace small text-truncate" th:text="${result.request.qrToken}"></div>
+                    </div>
+                </div>
+
+                <!-- FAILED TOKEN LOOKUP BLOCK -->
+                <div class="text-start" th:if="${result.request == null}">
+                    <h5 class="fw-bold mb-3 border-bottom pb-2">User Details</h5>
+                    <div class="alert alert-danger border-0">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> Invalid or Unknown QR Token
+                    </div>
+                </div>
+                
+                <div class="d-flex flex-column gap-3 mt-4 pt-3 border-top">
+                    <a th:href="@{/scanner}" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3"><i class="bi bi-upc-scan me-2"></i> SCAN NEXT QR</a>
+                    <a th:href="@{/dashboard}" class="btn btn-outline-dark rounded-pill fw-bold py-2">RETURN TO DASHBOARD</a>
+                </div>
+
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
