@@ -1,0 +1,1 @@
+package com.vams.repository; import com.vams.model.ScanLog; import org.springframework.data.jpa.repository.JpaRepository; import java.util.List; public interface ScanLogRepository extends JpaRepository<ScanLog, Long> { List<ScanLog> findByUser_Id(Long userId); List<ScanLog> findAllByOrderByTimestampDesc(); }

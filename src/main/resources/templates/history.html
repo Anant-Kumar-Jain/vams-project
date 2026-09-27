@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>VAMS - System History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-white pb-5">
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card rounded-0 border-dark mb-4">
+                <div class="card-header rounded-0 border-dark border-bottom">
+                    <h5 class="mb-0 fw-bold text-uppercase">FULL SYSTEM HISTORY (IMMUTABLE)</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row-padded row align-items-center bg-light border-bottom border-dark">
+                        <div class="col-12 fw-bold">ACCOUNT ACTIVITY</div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered border-dark mb-0 table-sm" style="font-size: 0.9rem;">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Action</th>
+                                    <th>Actor</th>
+                                    <th>Target</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="log : ${systemLogs}">
+                                    <td th:text="${#temporals.format(log.timestamp, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                    <td th:text="${log.actionType}"></td>
+                                    <td th:text="${log.actorUsername}"></td>
+                                    <td th:text="${log.targetUsername}"></td>
+                                    <td th:text="${log.details}"></td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(systemLogs)}">
+                                    <td colspan="5" class="text-center">No account activity recorded.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row-padded row align-items-center bg-light border-top border-bottom border-dark mt-4">
+                        <div class="col-12 fw-bold">GATE SCAN ACTIVITY</div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-bordered border-dark mb-0 table-sm" style="font-size: 0.9rem;">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Scan Type</th>
+                                    <th>User ID</th>
+                                    <th>Gate Location</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="scan : ${scanLogs}">
+                                    <td th:text="${#temporals.format(scan.timestamp, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                                    <td>
+                                        <span th:if="${scan.scanType.name() == 'ENTRY'}" class="badge bg-success">ENTER</span>
+                                        <span th:if="${scan.scanType.name() == 'EXIT'}" class="badge bg-danger">EXIT</span>
+                                    </td>
+                                    <td th:text="${scan.user.username}"></td>
+                                    <td th:text="${scan.gateLocation}"></td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(scanLogs)}">
+                                    <td colspan="4" class="text-center">No scan activity recorded.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="row-padded row border-top border-dark mt-3">
+                        <div class="col-12">
+                            <button onclick="history.back()" class="btn-primary-action">BACK</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

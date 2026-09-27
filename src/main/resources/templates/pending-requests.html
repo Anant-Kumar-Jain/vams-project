@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>VAMS - Pending Requests</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+<link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="bg-white pb-5">
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h4 class="mb-3 text-uppercase fw-bold">PENDING APPROVALS</h4>
+            
+            <div th:if="${param.approved}" class="alert alert-success rounded-0">Request Approved and QR Generated.</div>
+            <div th:if="${param.rejected}" class="alert alert-danger rounded-0">Request Rejected.</div>
+            <div th:if="${#lists.isEmpty(requests) and #lists.isEmpty(stationRequests)}" class="alert alert-secondary rounded-0">No pending requests right now.</div>
+
+            <!-- Loop over all station requests coming from the database -->
+            <div class="card rounded-0 border-dark mb-4" th:each="req : ${stationRequests}">
+                <div class="card-header rounded-0 bg-dark text-white border-bottom">
+                    <h5 class="mb-0 fw-bold text-uppercase">GUARD STATION REQUEST</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row-padded row"><div class="col-12">Guard Name: <span th:text="${req.user.username}"></span></div></div>
+                    <div class="row-padded row"><div class="col-12">Requested Gate: <strong th:text="'Gate ' + ${req.gate.gateNo} + ' - ' + ${req.gate.location}"></strong></div></div>
+                    <div class="row-padded row"><div class="col-12">Status: <strong class="text-warning">PENDING</strong></div></div>
+                    
+                    <div class="row-padded row align-items-center border-bottom-0 bg-light">
+                        <div class="col-12">
+                            <!-- Real action buttons tied to Manager routes -->
+                            <form th:action="@{/manager/approve-station/{id}(id=${req.id})}" method="post" class="d-inline me-3">
+                                <button type="submit" class="btn-semantic-success">APPROVE STATION</button>
+                            </form>
+                            <form th:action="@{/manager/reject-station/{id}(id=${req.id})}" method="post" class="d-inline">
+                                <button type="submit" class="btn-semantic-danger">REJECT</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loop over all requests coming from the database -->
+            <div class="card rounded-0 border-dark mb-4" th:each="req : ${requests}">
+                <div class="card-header rounded-0 border-dark border-bottom">
+                    <h5 class="mb-0 fw-bold text-uppercase">REQUEST DETAILS</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="row-padded row"><div class="col-12">Request ID: <span th:text="${req.requestId}"></span></div></div>
+                    <div class="row-padded row"><div class="col-12">Applicant Name: <span th:text="${req.user.username}"></span></div></div>
+                    <div class="row-padded row"><div class="col-12">Requested Role: <span th:text="${req.user.role}"></span></div></div>
+                    <div class="row-padded row"><div class="col-12">Status: <strong class="text-warning">PENDING</strong></div></div>
+                    
+                    <div class="row-padded row align-items-center border-bottom-0 bg-light">
+                        <div class="col-12">
+                            <!-- Real action buttons tied to Manager routes -->
+                            <form th:action="@{/manager/approve/{id}(id=${req.requestId})}" method="post" class="d-inline me-3">
+                                <button type="submit" class="btn-semantic-success">APPROVE</button>
+                            </form>
+                            <form th:action="@{/manager/reject/{id}(id=${req.requestId})}" method="post" class="d-inline">
+                                <button type="submit" class="btn-semantic-danger">REJECT</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <a th:href="@{/manager/dashboard}" class="btn-primary-action">RETURN TO DASHBOARD</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

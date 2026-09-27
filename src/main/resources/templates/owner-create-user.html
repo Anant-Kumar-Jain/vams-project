@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Owner - Create User</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="modern-auth-container">
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark sticky-top" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); box-shadow: 0 4px 15px rgba(13,110,253,0.3); z-index: 1050;">
+  <div class="container-fluid px-4">
+    <div class="d-flex align-items-center">
+        <button class="btn btn-link text-white p-0 me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#ownerSidebar">
+          <i class="bi bi-list fs-2"></i>
+        </button>
+        <a class="navbar-brand fw-bold m-0" href="/owner/dashboard"><i class="bi bi-shield-check me-2"></i>Owner Panel</a>
+    </div>
+    <form th:action="@{/logout}" method="post" class="d-flex m-0">
+        <button type="submit" class="btn btn-sm btn-light text-primary rounded-pill px-4 fw-bold shadow-sm">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<!-- Offcanvas Sidebar -->
+<div class="offcanvas offcanvas-start border-0 shadow" tabindex="-1" id="ownerSidebar" style="width: 280px; background: #ffffff;">
+  <div class="offcanvas-header border-bottom px-4 py-3">
+    <h5 class="offcanvas-title fw-bold text-primary"><i class="bi bi-shield-check me-2"></i>Menu</h5>
+    <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body p-3">
+    <div class="text-muted small fw-bold mb-3 px-3">DASHBOARD</div>
+    <ul class="nav flex-column gap-2 mb-4">
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-dark" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/dashboard"><i class="bi bi-grid-fill me-3 text-muted"></i>Overview</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-primary bg-primary bg-opacity-10" href="/owner/create-user"><i class="bi bi-person-plus-fill me-3"></i>Create User</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-dark" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/requests"><i class="bi bi-inbox-fill me-3 text-muted"></i>Access Requests</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-dark" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/users"><i class="bi bi-people-fill me-3 text-muted"></i>System Users</a>
+      </li>
+    </ul>
+    
+    <div class="text-muted small fw-bold mb-3 px-3">SYSTEM</div>
+    <ul class="nav flex-column gap-2">
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-dark" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/logs"><i class="bi bi-journal-text me-3 text-muted"></i>Audit Logs</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold rounded-3 px-3 py-2 text-dark" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/gates"><i class="bi bi-door-open-fill me-3 text-muted"></i>Gates</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="modern-auth-card p-4 p-md-5 mb-5 shadow-sm">
+                
+                <!-- Alerts -->
+                <div th:if="${param.userCreated}" class="alert alert-success rounded-3 shadow-sm border-0 border-start border-5 border-success mb-4">
+                    <i class="bi bi-check-circle-fill me-2"></i>User created and auto-approved successfully!
+                </div>
+                
+                <h5 class="modern-auth-title fs-4 mb-4"><i class="bi bi-person-plus-fill me-2"></i>Create New User</h5>
+                
+                <!-- Create User Tabs -->
+                <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active rounded-pill fw-bold" id="pills-manager-tab" data-bs-toggle="pill" data-bs-target="#pills-manager" type="button" role="tab" aria-selected="true">Manager</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill fw-bold" id="pills-employee-tab" data-bs-toggle="pill" data-bs-target="#pills-employee" type="button" role="tab" aria-selected="false">Employee</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link rounded-pill fw-bold" id="pills-guest-tab" data-bs-toggle="pill" data-bs-target="#pills-guest" type="button" role="tab" aria-selected="false">Guest</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="pills-tabContent">
+                    <!-- MANAGER TAB -->
+                    <div class="tab-pane fade show active" id="pills-manager" role="tabpanel">
+                        <form th:action="@{/owner/create-user}" method="post">
+                            <input type="hidden" name="role" value="MANAGER">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Full Name</label>
+                                    <input type="text" name="name" class="modern-input" placeholder="Manager Name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Username</label>
+                                    <input type="text" name="username" class="modern-input" placeholder="mgr_username" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Email</label>
+                                    <input type="email" name="email" class="modern-input" placeholder="manager@example.com" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Password</label>
+                                    <input type="password" name="password" class="modern-input" placeholder="Set temporary password" required>
+                                </div>
+                                <div class="col-md-12 mt-3">
+                                    <label class="form-label text-muted small fw-bold">Access Duration</label>
+                                    <div class="d-flex gap-3 mt-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="validityType" id="mgrValOngoing" value="ONGOING" checked>
+                                            <label class="form-check-label" for="mgrValOngoing">Ongoing</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="validityType" id="mgrValOneDay" value="ONE_DAY">
+                                            <label class="form-check-label" for="mgrValOneDay">One Day</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="validityType" id="mgrValLogoff" value="UNTIL_LOGOFF">
+                                            <label class="form-check-label" for="mgrValLogoff">Until Logoff</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary-action w-100">+ CREATE MANAGER</button>
+                        </form>
+                    </div>
+
+                    <!-- EMPLOYEE TAB -->
+                    <div class="tab-pane fade" id="pills-employee" role="tabpanel">
+                        <form th:action="@{/owner/create-user}" method="post">
+                            <input type="hidden" name="role" value="EMPLOYEE">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Full Name</label>
+                                    <input type="text" name="name" class="modern-input" placeholder="Employee Name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Username</label>
+                                    <input type="text" name="username" class="modern-input" placeholder="emp_username" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Email</label>
+                                    <input type="email" name="email" class="modern-input" placeholder="employee@example.com" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Password</label>
+                                    <input type="password" name="password" class="modern-input" placeholder="Set temporary password" required>
+                                </div>
+                                <div class="col-md-12 mt-3">
+                                    <label class="form-label text-muted small fw-bold">Access Duration</label>
+                                    <div class="d-flex gap-3 mt-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="validityType" id="empValOngoing" value="ONGOING" checked>
+                                            <label class="form-check-label" for="empValOngoing">Ongoing</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="validityType" id="empValOneDay" value="ONE_DAY">
+                                            <label class="form-check-label" for="empValOneDay">One Day</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="validityType" id="empValLogoff" value="UNTIL_LOGOFF">
+                                            <label class="form-check-label" for="empValLogoff">Until Logoff</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary-action w-100">+ CREATE EMPLOYEE</button>
+                        </form>
+                    </div>
+
+                    <!-- GUEST TAB -->
+                    <div class="tab-pane fade" id="pills-guest" role="tabpanel">
+                        <form th:action="@{/owner/create-user}" method="post">
+                            <input type="hidden" name="role" value="GUEST">
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Full Name</label>
+                                    <input type="text" name="name" class="modern-input" placeholder="Guest Name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Username</label>
+                                    <input type="text" name="username" class="modern-input" placeholder="guest_username" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Email</label>
+                                    <input type="email" name="email" class="modern-input" placeholder="guest@example.com" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label text-muted small fw-bold">Password</label>
+                                    <input type="password" name="password" class="modern-input" placeholder="Set temporary password" required>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label text-muted small fw-bold">Purpose of Visit</label>
+                                    <input type="text" name="purpose" class="modern-input" placeholder="E.g. Meeting, Interview, Delivery" required>
+                                </div>
+                                <div class="col-md-12 mt-3">
+                                    <label class="form-label text-muted small fw-bold">Access Duration</label>
+                                    <div class="d-flex gap-3 mt-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="validityType" id="valOngoing" value="ONGOING" checked>
+                                            <label class="form-check-label" for="valOngoing">Ongoing</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="validityType" id="valOneDay" value="ONE_DAY">
+                                            <label class="form-check-label" for="valOneDay">One Day</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="validityType" id="valLogoff" value="UNTIL_LOGOFF">
+                                            <label class="form-check-label" for="valLogoff">Until Logoff</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary-action w-100">+ CREATE GUEST</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Firebase SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, sendSignInLinkToEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    // Same config as your other pages
+    const firebaseConfig = {
+        apiKey: "AIzaSyCNVl1G3DJYO2bGPdnvkx5vRwiKRgVND8I",
+        authDomain: "vams-project-e18dd.firebaseapp.com",
+        projectId: "vams-project-e18dd",
+        storageBucket: "vams-project-e18dd.firebasestorage.app",
+        messagingSenderId: "753238530225",
+        appId: "1:753238530225:web:09aa9a28e6666b5002aa90"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Check if we just created a user and need to send them a verification link
+    const urlParams = new URLSearchParams(window.location.search);
+    const userCreated = urlParams.get('userCreated');
+    const createdEmail = urlParams.get('createdEmail');
+
+    if (userCreated && createdEmail) {
+        console.log("Sending background verification email to:", createdEmail);
+        
+        const actionCodeSettings = {
+            url: window.location.origin + '/api/verify-success?email=' + encodeURIComponent(createdEmail),
+            handleCodeInApp: true,
+        };
+
+        sendSignInLinkToEmail(auth, createdEmail, actionCodeSettings)
+            .then(() => {
+                console.log("Verification email successfully sent in background!");
+                window.history.replaceState({}, document.title, window.location.pathname);
+            })
+            .catch((error) => {
+                console.error("Error sending background verification email:", error);
+            });
+    }
+</script>
+</body>
+</html>

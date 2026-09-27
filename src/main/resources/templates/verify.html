@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>VAMS - Verify Email</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Firebase SDK (Using Compat version for pure HTML integration) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <link href="/css/style.css?v=3" rel="stylesheet">
+</head>
+<body class="modern-auth-container d-flex align-items-center justify-content-center">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            
+            <div class="text-center mb-4">
+                <h4 class="modern-auth-title mb-1" id="pageTitle">Verify Email</h4>
+                <p class="modern-auth-subtitle mb-0" id="pageSubtitle">Securing your account</p>
+            </div>
+
+            <div class="card modern-auth-card p-4">
+                <div class="card-body p-0 text-center">
+                    
+                    <!-- Fallback Manual Entry (Hidden by default if URL param exists) -->
+                    <div id="mainUI" style="display: none;">
+                        <p class="modern-auth-subtitle mb-4 text-start">Enter your registered email address to receive a secure sign-in link.</p>
+                        
+                        <div class="mb-4 text-start">
+                            <label class="modern-auth-subtitle fw-bold mb-1 d-block" style="font-size: 0.8rem;">Email</label>
+                            <div class="input-group modern-input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" id="emailInput" class="form-control" placeholder="name@example.com" required>
+                            </div>
+                        </div>
+
+                        <button class="btn-primary-action w-100 mb-3" onclick="sendLink()">SEND VERIFICATION LINK</button>
+                        <a th:href="@{/login}" class="modern-auth-link fw-bold">Return to Login</a>
+                    </div>
+                    
+                    <!-- Auto-Sending State -->
+                    <div id="sendingUI" style="display: none;">
+                        <h5 class="modern-auth-title mb-3">Sending Link...</h5>
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+
+                    <!-- Verifying Link State -->
+                    <div id="loadingUI" style="display: none;">
+                        <h5 class="modern-auth-title mb-3">Verifying Link...</h5>
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Success Sent Message -->
+                    <div id="successSentUI" style="display: none;">
+                        <div class="mb-3">
+                            <i class="bi bi-envelope-check" style="font-size: 3rem; color: var(--color-primary-blue);"></i>
+                        </div>
+                        <h5 class="modern-auth-title mb-3">Link Sent!</h5>
+                        <p class="modern-auth-subtitle mb-4">We have sent a verification link to your email. Please check your inbox and click the link to securely sign in.</p>
+                        <a th:href="@{/login}" class="btn-primary-action w-100 d-inline-block text-decoration-none">Go to Login</a>
+                    </div>
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyCNVl1G3DJYO2bGPdnvkx5vRwiKRgVND8I",
+        authDomain: "vams-project-e18dd.firebaseapp.com",
+        projectId: "vams-project-e18dd",
+        storageBucket: "vams-project-e18dd.firebasestorage.app",
+        messagingSenderId: "753238530225",
+        appId: "1:753238530225:web:09aa9a28e6666b5002aa90"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const actionCodeSettings = {
+        url: window.location.origin + '/verify',
+        handleCodeInApp: true,
+    };
+
+    function sendLink(emailParam) {
+        const email = emailParam || document.getElementById('emailInput').value;
+        if(email.trim() === '') { alert("Please enter your email."); return; }
+        
+        document.getElementById('mainUI').style.display = 'none';
+        document.getElementById('sendingUI').style.display = 'block';
+
+        auth.sendSignInLinkToEmail(email, actionCodeSettings)
+            .then(() => {
+                window.localStorage.setItem('emailForSignIn', email);
+                document.getElementById('sendingUI').style.display = 'none';
+                document.getElementById('successSentUI').style.display = 'block';
+                document.getElementById('pageSubtitle').innerText = "Check your email";
+            })
+            .catch((error) => {
+                alert("Error sending link: " + error.message);
+                document.getElementById('sendingUI').style.display = 'none';
+                document.getElementById('mainUI').style.display = 'block';
+            });
+    }
+
+    // Logic to determine which UI to show
+    const urlParams = new URLSearchParams(window.location.search);
+    const autoEmail = urlParams.get('email');
+
+    if (auth.isSignInWithEmailLink(window.location.href)) {
+        // Scenario B: User clicked the link in their email
+        document.getElementById('mainUI').style.display = 'none';
+        document.getElementById('loadingUI').style.display = 'block';
+
+        let email = window.localStorage.getItem('emailForSignIn');
+        if (!email) {
+            email = window.prompt('Please provide your email for confirmation');
+        }
+        
+        auth.signInWithEmailLink(email, window.location.href)
+            .then((result) => {
+                window.localStorage.removeItem('emailForSignIn');
+                
+                // Tell the Spring Boot backend that verification was successful
+                fetch('/api/verify-success', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ email: email })
+                }).then(() => {
+                    window.location.href = '/login?registered=true';
+                });
+            })
+            .catch((error) => {
+                alert("Error verifying email link: " + error.message);
+                document.getElementById('loadingUI').style.display = 'none';
+                document.getElementById('mainUI').style.display = 'block';
+            });
+    } else if (autoEmail) {
+        // Scenario A: User just registered, auto-send link
+        sendLink(autoEmail);
+    } else {
+        // Scenario C: User navigated here manually
+        document.getElementById('mainUI').style.display = 'block';
+    }
+</script>
+</body>
+</html>

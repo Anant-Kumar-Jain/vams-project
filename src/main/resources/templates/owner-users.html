@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Owner - System Users Master Directory</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body class="modern-auth-container">
+
+<!-- Navbar -->
+<nav class="navbar navbar-dark sticky-top" style="background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); box-shadow: 0 4px 15px rgba(13,110,253,0.3) !important; z-index: 1050;">
+  <div class="container-fluid px-4">
+    <div class="d-flex align-items-center">
+        <button class="btn btn-link text-white p-0 me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#ownerSidebar">
+          <i class="bi bi-list fs-2"></i>
+        </button>
+        <a class="navbar-brand fw-bold m-0" href="/owner/dashboard"><i class="bi bi-shield-check me-2"></i>Owner Panel</a>
+    </div>
+    <form th:action="@{/logout}" method="post" class="d-flex m-0">
+        <button type="submit" class="btn btn-sm btn-light text-primary fw-bold shadow-sm" style="border-radius: 20px !important; padding: 6px 18px !important;">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<!-- Offcanvas Sidebar -->
+<div class="offcanvas offcanvas-start border-0 shadow" tabindex="-1" id="ownerSidebar" style="width: 280px; background: #ffffff;">
+  <div class="offcanvas-header border-bottom px-4 py-3">
+    <h5 class="offcanvas-title fw-bold text-primary"><i class="bi bi-shield-check me-2"></i>Menu</h5>
+    <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body p-3">
+    <div class="text-muted small fw-bold mb-3 px-3">DASHBOARD</div>
+    <ul class="nav flex-column gap-2 mb-4">
+      <li class="nav-item">
+        <a class="nav-link fw-semibold px-3 py-2 text-dark" style="border-radius: 8px !important;" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/dashboard"><i class="bi bi-grid-fill me-3 text-muted"></i>Overview</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold px-3 py-2 text-dark" style="border-radius: 8px !important;" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/create-user"><i class="bi bi-person-plus-fill me-3 text-muted"></i>Create User</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold px-3 py-2 text-dark" style="border-radius: 8px !important;" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/requests"><i class="bi bi-inbox-fill me-3 text-muted"></i>Access Requests</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold px-3 py-2 text-primary bg-primary bg-opacity-10" style="border-radius: 8px !important;" href="/owner/users"><i class="bi bi-people-fill me-3"></i>System Users</a>
+      </li>
+    </ul>
+    
+    <div class="text-muted small fw-bold mb-3 px-3">SYSTEM</div>
+    <ul class="nav flex-column gap-2">
+      <li class="nav-item">
+        <a class="nav-link fw-semibold px-3 py-2 text-dark" style="border-radius: 8px !important;" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/logs"><i class="bi bi-journal-text me-3 text-muted"></i>Audit Logs</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link fw-semibold px-3 py-2 text-dark" style="border-radius: 8px !important;" onmouseover="this.classList.add('bg-light')" onmouseout="this.classList.remove('bg-light')" href="/owner/gates"><i class="bi bi-door-open-fill me-3 text-muted"></i>Gates</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<!-- Main Container -->
+<div class="container-fluid px-3 px-md-5 py-4">
+
+    <!-- Feedback Alerts -->
+    <div th:if="${param.revoked}" class="alert alert-danger alert-dismissible fade show border-0 shadow-sm d-flex align-items-center mb-4" role="alert" style="border-radius: 12px !important; background: #fff1f0; border-left: 5px solid #dc3545 !important;">
+        <i class="bi bi-slash-circle-fill fs-3 text-danger me-3"></i>
+        <div class="flex-grow-1">
+            <strong class="text-danger d-block">User Access Revoked Successfully</strong>
+            <span class="text-dark">The user's access privileges and passes have been revoked. Their profile has been transferred to the <strong>Revoked Access</strong> log.</span>
+        </div>
+        <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${param.reinstated}" class="alert alert-success alert-dismissible fade show border-0 shadow-sm d-flex align-items-center mb-4" role="alert" style="border-radius: 12px !important; background: #e6f4ea; border-left: 5px solid #198754 !important;">
+        <i class="bi bi-check-circle-fill fs-3 text-success me-3"></i>
+        <div class="flex-grow-1">
+            <strong class="text-success d-block">User Access Reinstated</strong>
+            <span class="text-dark">The user's access has been successfully restored and moved back to their active role roster.</span>
+        </div>
+        <button type="button" class="btn-close shadow-none" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Header & Quick Actions -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h3 class="modern-auth-title m-0 fw-bold"><i class="bi bi-people-fill me-2 text-primary"></i>System Users Master Directory</h3>
+            <p class="modern-auth-subtitle m-0 mt-1">Categorized role rosters, personnel credential oversight, and revoked access logs</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/owner/create-user" class="btn btn-primary fw-bold d-inline-flex align-items-center shadow-sm" style="border-radius: 8px !important; background-color: #0d6efd !important; border-color: #0d6efd !important; color: #fff !important;">
+                <i class="bi bi-person-plus-fill me-2"></i>Create New User
+            </a>
+            <a href="/owner/logs" class="btn btn-outline-secondary fw-bold d-inline-flex align-items-center" style="border-radius: 8px !important; border-color: #ced4da !important; color: #495057 !important;">
+                <i class="bi bi-journal-text me-2"></i>Audit Logs
+            </a>
+        </div>
+    </div>
+
+    <!-- KPI Metric Summary Tiles -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4 col-xl">
+            <div onclick="bootstrap.Tab.getOrCreateInstance(document.getElementById('tab-btn-owners')).show();" role="button" class="modern-auth-card p-3 shadow-sm border h-100 d-flex align-items-center" style="border-radius: 12px !important; cursor: pointer;">
+                <div class="p-3 bg-primary bg-opacity-10 text-primary me-3" style="border-radius: 10px !important;">
+                    <i class="bi bi-shield-lock-fill fs-4"></i>
+                </div>
+                <div>
+                    <div class="text-muted small fw-bold">OWNERS</div>
+                    <div class="fs-4 fw-bold text-dark" th:text="${owners.size()}">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl">
+            <div onclick="bootstrap.Tab.getOrCreateInstance(document.getElementById('tab-btn-managers')).show();" role="button" class="modern-auth-card p-3 shadow-sm border h-100 d-flex align-items-center" style="border-radius: 12px !important; cursor: pointer;">
+                <div class="p-3 bg-info bg-opacity-10 text-info me-3" style="border-radius: 10px !important;">
+                    <i class="bi bi-person-badge-fill fs-4"></i>
+                </div>
+                <div>
+                    <div class="text-muted small fw-bold">MANAGERS</div>
+                    <div class="fs-4 fw-bold text-dark" th:text="${managers.size()}">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl">
+            <div onclick="bootstrap.Tab.getOrCreateInstance(document.getElementById('tab-btn-employees')).show();" role="button" class="modern-auth-card p-3 shadow-sm border h-100 d-flex align-items-center" style="border-radius: 12px !important; cursor: pointer;">
+                <div class="p-3 bg-success bg-opacity-10 text-success me-3" style="border-radius: 10px !important;">
+                    <i class="bi bi-person-workspace fs-4"></i>
+                </div>
+                <div>
+                    <div class="text-muted small fw-bold">EMPLOYEES</div>
+                    <div class="fs-4 fw-bold text-dark" th:text="${employees.size()}">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 col-xl">
+            <div onclick="bootstrap.Tab.getOrCreateInstance(document.getElementById('tab-btn-guests')).show();" role="button" class="modern-auth-card p-3 shadow-sm border h-100 d-flex align-items-center" style="border-radius: 12px !important; cursor: pointer;">
+                <div class="p-3 bg-secondary bg-opacity-10 text-secondary me-3" style="border-radius: 10px !important;">
+                    <i class="bi bi-person-fill fs-4"></i>
+                </div>
+                <div>
+                    <div class="text-muted small fw-bold">GUESTS</div>
+                    <div class="fs-4 fw-bold text-dark" th:text="${guests.size()}">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4 col-xl">
+            <div onclick="bootstrap.Tab.getOrCreateInstance(document.getElementById('tab-btn-revoked')).show();" role="button" class="modern-auth-card p-3 shadow-sm border h-100 d-flex align-items-center" style="border-radius: 12px !important; background: #fffdfd; cursor: pointer;">
+                <div class="p-3 bg-danger bg-opacity-10 text-danger me-3" style="border-radius: 10px !important;">
+                    <i class="bi bi-slash-circle-fill fs-4"></i>
+                </div>
+                <div>
+                    <div class="text-danger small fw-bold">REVOKED ACCESS</div>
+                    <div class="fs-4 fw-bold text-danger" th:text="${revokedUsers.size()}">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Categorized User Directory Card -->
+    <div class="modern-auth-card p-4 p-md-5 mb-5 shadow-sm border" style="border-radius: 16px !important;">
+        
+        <!-- Category Nav-Pills -->
+        <ul class="nav nav-pills mb-4 p-2 bg-light border flex-wrap" id="userDirectoryTabs" role="tablist" style="border-radius: 12px !important; gap: 6px;">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-bold text-dark px-3 py-2 d-flex align-items-center" id="tab-btn-owners" data-bs-toggle="pill" data-bs-target="#tab-pane-owners" type="button" role="tab" style="border-radius: 8px !important;">
+                    <i class="bi bi-shield-lock-fill text-primary me-2"></i>Owner
+                    <span class="badge bg-primary ms-2" style="border-radius: 10px !important;" th:text="${owners.size()}">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold text-dark px-3 py-2 d-flex align-items-center" id="tab-btn-managers" data-bs-toggle="pill" data-bs-target="#tab-pane-managers" type="button" role="tab" style="border-radius: 8px !important;">
+                    <i class="bi bi-person-badge-fill text-info me-2"></i>Manager
+                    <span class="badge bg-info text-dark ms-2" style="border-radius: 10px !important;" th:text="${managers.size()}">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold text-dark px-3 py-2 d-flex align-items-center" id="tab-btn-employees" data-bs-toggle="pill" data-bs-target="#tab-pane-employees" type="button" role="tab" style="border-radius: 8px !important;">
+                    <i class="bi bi-person-workspace text-success me-2"></i>Employee
+                    <span class="badge bg-success ms-2" style="border-radius: 10px !important;" th:text="${employees.size()}">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold text-dark px-3 py-2 d-flex align-items-center" id="tab-btn-guests" data-bs-toggle="pill" data-bs-target="#tab-pane-guests" type="button" role="tab" style="border-radius: 8px !important;">
+                    <i class="bi bi-person-fill text-secondary me-2"></i>Guest
+                    <span class="badge bg-secondary ms-2" style="border-radius: 10px !important;" th:text="${guests.size()}">0</span>
+                </button>
+            </li>
+            <li class="nav-item ms-md-auto" role="presentation">
+                <button class="nav-link fw-bold text-danger px-3 py-2 d-flex align-items-center" id="tab-btn-revoked" data-bs-toggle="pill" data-bs-target="#tab-pane-revoked" type="button" role="tab" style="border-radius: 8px !important; background: rgba(220,53,69,0.08);">
+                    <i class="bi bi-slash-circle-fill text-danger me-2"></i>Revoked Access
+                    <span class="badge bg-danger ms-2" style="border-radius: 10px !important;" th:text="${revokedUsers.size()}">0</span>
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content Panes -->
+        <div class="tab-content" id="userDirectoryContent">
+
+            <!-- 1. OWNERS PANE -->
+            <div class="tab-pane fade show active" id="tab-pane-owners" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold m-0"><i class="bi bi-shield-lock-fill text-primary me-2"></i>System Owners</h5>
+                        <p class="text-muted small m-0">Root administrators with master access control and policy authority</p>
+                    </div>
+                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2" style="border-radius: 8px !important;">
+                        <span th:text="${owners.size()}">0</span> Active
+                    </span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 border">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 10%;">ID</th>
+                                <th style="width: 25%;">Name & Username</th>
+                                <th style="width: 25%;">Email</th>
+                                <th style="width: 15%;">Role</th>
+                                <th style="width: 15%;">Status</th>
+                                <th style="width: 10%;" class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${owners}">
+                                <td class="text-secondary fw-semibold" th:text="${'#' + u.id}"></td>
+                                <td>
+                                    <div class="fw-bold text-dark" th:text="${u.name != null and !u.name.isEmpty() ? u.name : u.username}"></div>
+                                    <small class="text-muted" th:text="${'@' + u.username}"></small>
+                                </td>
+                                <td>
+                                    <span th:text="${u.email != null ? u.email : 'N/A'}"></span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary" style="border-radius: 6px !important;" th:text="${u.role}">OWNER</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 6px !important;">
+                                        <i class="bi bi-check-circle-fill me-1"></i>Active Root
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <span class="badge bg-light text-muted border px-2 py-1" style="border-radius: 6px !important;">
+                                        <i class="bi bi-lock-fill me-1"></i>Protected
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(owners)}">
+                                <td colspan="6" class="text-center text-muted py-4">No owner accounts registered.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2. MANAGERS PANE -->
+            <div class="tab-pane fade" id="tab-pane-managers" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold m-0"><i class="bi bi-person-badge-fill text-info me-2"></i>System Managers</h5>
+                        <p class="text-muted small m-0">Managers handle visitor approvals, shift schedules, and gate assignments</p>
+                    </div>
+                    <span class="badge bg-info bg-opacity-10 text-info border border-info px-3 py-2" style="border-radius: 8px !important;">
+                        <span th:text="${managers.size()}">0</span> Active
+                    </span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 border">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 10%;">ID</th>
+                                <th style="width: 25%;">Name & Username</th>
+                                <th style="width: 25%;">Email</th>
+                                <th style="width: 15%;">Role</th>
+                                <th style="width: 10%;">Status</th>
+                                <th style="width: 15%;" class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${managers}">
+                                <td class="text-secondary fw-semibold" th:text="${'#' + u.id}"></td>
+                                <td>
+                                    <div class="fw-bold text-dark" th:text="${u.name != null and !u.name.isEmpty() ? u.name : u.username}"></div>
+                                    <small class="text-muted" th:text="${'@' + u.username}"></small>
+                                </td>
+                                <td>
+                                    <span th:text="${u.email != null ? u.email : 'N/A'}"></span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info text-dark" style="border-radius: 6px !important;" th:text="${u.role}">MANAGER</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 6px !important;">
+                                        <i class="bi bi-check-circle-fill me-1"></i>Active
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <form th:action="@{'/owner/users/revoke/' + ${u.id}}" method="post" class="d-inline" onsubmit="return confirm('Revoke access for Manager ' + this.dataset.username + '? Their login will be immediately disabled and they will be moved to Revoked Access.');" th:data-username="${u.username}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger fw-semibold d-inline-flex align-items-center" style="border-radius: 6px !important; border-color: #dc3545 !important; color: #dc3545 !important;">
+                                            <i class="bi bi-slash-circle me-1"></i>Revoke Access
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(managers)}">
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="bi bi-person-badge fs-2 text-secondary d-block mb-2"></i>
+                                    No active managers registered. Use "Create New User" to assign a Manager.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 3. EMPLOYEES PANE -->
+            <div class="tab-pane fade" id="tab-pane-employees" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold m-0"><i class="bi bi-person-workspace text-success me-2"></i>Employees & Staff</h5>
+                        <p class="text-muted small m-0">Guards and personnel operating check-in scanners and perimeter gates</p>
+                    </div>
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success px-3 py-2" style="border-radius: 8px !important;">
+                        <span th:text="${employees.size()}">0</span> Active
+                    </span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 border">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 10%;">ID</th>
+                                <th style="width: 25%;">Name & Username</th>
+                                <th style="width: 25%;">Email</th>
+                                <th style="width: 15%;">Role</th>
+                                <th style="width: 10%;">Status</th>
+                                <th style="width: 15%;" class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${employees}">
+                                <td class="text-secondary fw-semibold" th:text="${'#' + u.id}"></td>
+                                <td>
+                                    <div class="fw-bold text-dark" th:text="${u.name != null and !u.name.isEmpty() ? u.name : u.username}"></div>
+                                    <small class="text-muted" th:text="${'@' + u.username}"></small>
+                                </td>
+                                <td>
+                                    <span th:text="${u.email != null ? u.email : 'N/A'}"></span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success" style="border-radius: 6px !important;" th:text="${u.role}">EMPLOYEE</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 6px !important;">
+                                        <i class="bi bi-check-circle-fill me-1"></i>Active
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <form th:action="@{'/owner/users/revoke/' + ${u.id}}" method="post" class="d-inline" onsubmit="return confirm('Revoke access for Employee ' + this.dataset.username + '?');" th:data-username="${u.username}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger fw-semibold d-inline-flex align-items-center" style="border-radius: 6px !important; border-color: #dc3545 !important; color: #dc3545 !important;">
+                                            <i class="bi bi-slash-circle me-1"></i>Revoke Access
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(employees)}">
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="bi bi-person-workspace fs-2 text-secondary d-block mb-2"></i>
+                                    No active employees registered.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 4. GUESTS PANE -->
+            <div class="tab-pane fade" id="tab-pane-guests" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="fw-bold m-0"><i class="bi bi-person-fill text-secondary me-2"></i>Guests & Visitors</h5>
+                        <p class="text-muted small m-0">Public visitors registered for temporary QR access passes</p>
+                    </div>
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary px-3 py-2" style="border-radius: 8px !important;">
+                        <span th:text="${guests.size()}">0</span> Active
+                    </span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 border">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 10%;">ID</th>
+                                <th style="width: 25%;">Name & Username</th>
+                                <th style="width: 25%;">Email</th>
+                                <th style="width: 15%;">Role</th>
+                                <th style="width: 10%;">Status</th>
+                                <th style="width: 15%;" class="text-end">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${guests}">
+                                <td class="text-secondary fw-semibold" th:text="${'#' + u.id}"></td>
+                                <td>
+                                    <div class="fw-bold text-dark" th:text="${u.name != null and !u.name.isEmpty() ? u.name : u.username}"></div>
+                                    <small class="text-muted" th:text="${'@' + u.username}"></small>
+                                </td>
+                                <td>
+                                    <span th:text="${u.email != null ? u.email : 'N/A'}"></span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border" style="border-radius: 6px !important;" th:text="${u.role}">GUEST</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success px-2 py-1" style="border-radius: 6px !important;">
+                                        <i class="bi bi-check-circle-fill me-1"></i>Active
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <form th:action="@{'/owner/users/revoke/' + ${u.id}}" method="post" class="d-inline" onsubmit="return confirm('Revoke access for Guest ' + this.dataset.username + '?');" th:data-username="${u.username}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger fw-semibold d-inline-flex align-items-center" style="border-radius: 6px !important; border-color: #dc3545 !important; color: #dc3545 !important;">
+                                            <i class="bi bi-slash-circle me-1"></i>Revoke Access
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(guests)}">
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="bi bi-person fs-2 text-secondary d-block mb-2"></i>
+                                    No active guest accounts registered.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 5. REVOKED ACCESS PANE -->
+            <div class="tab-pane fade" id="tab-pane-revoked" role="tabpanel">
+                <div class="alert alert-danger bg-danger bg-opacity-10 border border-danger border-opacity-25 p-3 mb-4 d-flex align-items-center" style="border-radius: 12px !important;">
+                    <i class="bi bi-shield-x fs-2 text-danger me-3"></i>
+                    <div class="flex-grow-1">
+                        <div class="fw-bold text-danger fs-6">Revoked Access & Deactivated Personnel Log</div>
+                        <div class="small text-muted">
+                            Accounts whose access has been permanently revoked by an Owner. When any Manager, Employee, or Guest access is revoked, they are immediately transferred here. Login privileges and QR tokens are terminated.
+                        </div>
+                    </div>
+                    <span class="badge bg-danger px-3 py-2 ms-2" style="border-radius: 8px !important;" th:text="${revokedUsers.size()} + ' Revoked'">0 Revoked</span>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 border">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 10%;">ID</th>
+                                <th style="width: 25%;">User Identity</th>
+                                <th style="width: 25%;">Account State / Email</th>
+                                <th style="width: 15%;">Former Role</th>
+                                <th style="width: 15%;">Revocation Status</th>
+                                <th style="width: 10%;" class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${revokedUsers}">
+                                <td class="text-secondary fw-semibold" th:text="${'#' + u.id}"></td>
+                                <td>
+                                    <div class="fw-bold text-dark" th:text="${u.name != null and !u.name.isEmpty() ? u.name : u.username}"></div>
+                                    <small class="text-muted" th:text="${'@' + u.username}"></small>
+                                </td>
+                                <td>
+                                    <span th:if="${u.email != null and u.email.startsWith('REVOKED_')}" class="badge bg-danger bg-opacity-10 text-danger border border-danger px-2 py-1" style="border-radius: 6px !important;">
+                                        <i class="bi bi-slash-circle me-1"></i>Email Nullified & Freed
+                                    </span>
+                                    <span th:unless="${u.email != null and u.email.startsWith('REVOKED_')}" class="text-muted" th:text="${u.email != null ? u.email : 'N/A'}"></span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary" style="border-radius: 6px !important;" th:text="${u.role}">ROLE</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger px-2 py-1" style="border-radius: 6px !important;">
+                                        <i class="bi bi-x-octagon-fill me-1"></i>ACCESS REVOKED
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <form th:action="@{'/owner/users/reinstate/' + ${u.id}}" method="post" class="d-inline" onsubmit="return confirm('Reinstate access for ' + this.dataset.username + '? This will restore their active account status and return them to the active role roster.');" th:data-username="${u.username}">
+                                            <button type="submit" class="btn btn-sm btn-outline-success fw-semibold d-inline-flex align-items-center" style="border-radius: 6px !important; border-color: #198754 !important; color: #198754 !important;" title="Reinstate / Reactivate User">
+                                                <i class="bi bi-arrow-counterclockwise me-1"></i>Restore
+                                            </button>
+                                        </form>
+                                        <a href="/owner/logs" class="btn btn-sm btn-outline-secondary fw-semibold d-inline-flex align-items-center" style="border-radius: 6px !important; border-color: #ced4da !important; color: #495057 !important;" title="Inspect in Audit Logs">
+                                            <i class="bi bi-journal-text"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(revokedUsers)}">
+                                <td colspan="6" class="text-center text-muted py-5">
+                                    <i class="bi bi-shield-check display-4 text-success d-block mb-3"></i>
+                                    <h6 class="fw-bold text-dark">No Revoked Access Records</h6>
+                                    <p class="small text-muted mb-0">All registered credentials and role accounts are currently active in good standing.</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Tab switching based on URL parameters or hashes
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('revoked')) {
+            const revokedTabBtn = document.getElementById('tab-btn-revoked');
+            if (revokedTabBtn) {
+                bootstrap.Tab.getOrCreateInstance(revokedTabBtn).show();
+            }
+        } else if (urlParams.get('tab')) {
+            const tabParam = urlParams.get('tab');
+            const targetBtn = document.getElementById('tab-btn-' + tabParam);
+            if (targetBtn) {
+                bootstrap.Tab.getOrCreateInstance(targetBtn).show();
+            }
+        } else if (urlParams.get('reinstated')) {
+            // Stay on revoked or show appropriate tab
+            const revokedTabBtn = document.getElementById('tab-btn-revoked');
+            if (revokedTabBtn) {
+                bootstrap.Tab.getOrCreateInstance(revokedTabBtn).show();
+            }
+        } else if (window.location.hash) {
+            const hash = window.location.hash;
+            const targetBtn = document.querySelector(`button[data-bs-target="${hash}"]`);
+            if (targetBtn) {
+                bootstrap.Tab.getOrCreateInstance(targetBtn).show();
+            }
+        }
+    });
+</script>
+</body>
+</html>
